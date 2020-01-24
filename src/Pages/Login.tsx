@@ -22,10 +22,18 @@ export default class Login extends React.Component<ILoginProps> {
           pageAlignment="center"
           navLinksNear={[{ displayName: "Login", isHeader: true }]}
           navLinksFar={[
-            { displayName: "Home", url: "/" },
-            { displayName: "Feed" },
-            { displayName: "Register", url: "/register" },
-            { displayName: "Login", url: "/login" }
+            { displayName: "Home", url: "/", iconName: "la la-home" },
+            { displayName: "Feed", url: "/feed", iconName: "la la-rss" },
+            {
+              displayName: "Register",
+              url: "/register",
+              iconName: "la la-user-plus"
+            },
+            {
+              displayName: "Login",
+              url: "/login",
+              iconName: "la la-sign-in-alt"
+            }
           ]}
           onNavLinkClick={url => url && this.props.history.push(url)}
         >
@@ -67,13 +75,19 @@ export default class Login extends React.Component<ILoginProps> {
                   <div
                     style={{
                       margin: "0 auto",
-                      width: "80%",
-                      textAlign: "center"
+                      width: "80%"
                     }}
                   >
-                    <p>
+                    <p
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center"
+                      }}
+                    >
                       Forgot password?{" "}
                       <Link
+                        inlineLine
                         text="Click Here"
                         onClick={() =>
                           this.props.history.push("/forgotpassword")

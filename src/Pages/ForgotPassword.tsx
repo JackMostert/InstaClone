@@ -21,10 +21,18 @@ export default class ForgotPassword extends React.Component<
           pageAlignment="center"
           navLinksNear={[{ displayName: "ForgotPassword", isHeader: true }]}
           navLinksFar={[
-            { displayName: "Home", url: "/" },
-            { displayName: "Feed" },
-            { displayName: "Register", url: "/register" },
-            { displayName: "Login", url: "/login" }
+            { displayName: "Home", url: "/", iconName: "la la-home" },
+            { displayName: "Feed", url: "/feed", iconName: "la la-rss" },
+            {
+              displayName: "Register",
+              url: "/register",
+              iconName: "la la-user-plus"
+            },
+            {
+              displayName: "Login",
+              url: "/login",
+              iconName: "la la-sign-in-alt"
+            }
           ]}
           onNavLinkClick={url => url && this.props.history.push(url)}
         >
@@ -51,7 +59,7 @@ export default class ForgotPassword extends React.Component<
               <Text weight="regular" fontSize="1.3rem">
                 Check your email for a link to reset your password
               </Text>
-              <Link onClick={() => this.props.history.push("login")}>
+              <Link inlineLine onClick={() => this.props.history.push("login")}>
                 Click to return
               </Link>
             </Card>

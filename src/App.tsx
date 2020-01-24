@@ -5,6 +5,7 @@ import Home from "./Pages/Home";
 import Login from "./Pages/Login";
 import Register from "./Pages/Register";
 import ForgotPassword from "./Pages/ForgotPassword";
+import Feed from "./Pages/Feed";
 
 const App: React.FC = () => {
   return (
@@ -12,6 +13,7 @@ const App: React.FC = () => {
       <Router>
         <Route exact path="/" render={props => <Home {...props} />} />
         <Route exact path="/login" render={props => <Login {...props} />} />
+        <Route exact path="/feed" render={props => <Feed {...props} />} />
         <Route
           exact
           path="/register"

@@ -17,10 +17,18 @@ export default class Home extends React.Component<IHomeProps> {
           pageAlignment="center"
           navLinksNear={[{ displayName: "Home", isHeader: true }]}
           navLinksFar={[
-            { displayName: "Home", url: "/" },
-            { displayName: "Feed" },
-            { displayName: "Register", url: "/register" },
-            { displayName: "Login", url: "/login" }
+            { displayName: "Home", url: "/", iconName: "la la-home" },
+            { displayName: "Feed", url: "/feed", iconName: "la la-rss" },
+            {
+              displayName: "Register",
+              url: "/register",
+              iconName: "la la-user-plus"
+            },
+            {
+              displayName: "Login",
+              url: "/login",
+              iconName: "la la-sign-in-alt"
+            }
           ]}
           onNavLinkClick={url => url && this.props.history.push(url)}
         >
