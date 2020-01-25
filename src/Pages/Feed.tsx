@@ -7,6 +7,7 @@ import CardContent from "../Personal-Design-Language/CardContent/Index";
 import CardTitle from "../Personal-Design-Language/CardTitle/Index";
 import Persona from "../Personal-Design-Language/Persona";
 import Icon from "../Personal-Design-Language/Icon";
+import { Link } from "../Personal-Design-Language/Link/Link";
 
 export interface IFeedProps {
   history: any;
@@ -53,7 +54,7 @@ export default class Feed extends React.Component<IFeedProps, IFeedState> {
                   shadowSpread={3}
                   style={{ borderRadius: "5px" }}
                 >
-                  <CardImage src="https://picsum.photos/400/300" />
+                  <CardImage src="https://picsum.photos/400/300"></CardImage>
                   <CardTitle size={5}>
                     <Persona
                       size={45}
@@ -76,6 +77,14 @@ export default class Feed extends React.Component<IFeedProps, IFeedState> {
                         text="1234"
                       />
                       <Icon icon="lar la-heart" fontSize="1.7rem" text="1234" />
+                      <div style={{ textAlign: "right", width: "100%" }}>
+                        <Link
+                          inlineLine
+                          onClick={() => this.props.history.push("/view")}
+                        >
+                          VIEW
+                        </Link>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
@@ -108,6 +117,14 @@ export default class Feed extends React.Component<IFeedProps, IFeedState> {
                         text="1234"
                       />
                       <Icon icon="lar la-heart" fontSize="1.7rem" text="1234" />
+                      <div style={{ textAlign: "right", width: "100%" }}>
+                        <Link
+                          inlineLine
+                          onClick={() => this.props.history.push("/view")}
+                        >
+                          VIEW
+                        </Link>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
@@ -140,6 +157,14 @@ export default class Feed extends React.Component<IFeedProps, IFeedState> {
                         text="1234"
                       />
                       <Icon icon="lar la-heart" fontSize="1.7rem" text="1234" />
+                      <div style={{ textAlign: "right", width: "100%" }}>
+                        <Link
+                          inlineLine
+                          onClick={() => this.props.history.push("/view")}
+                        >
+                          VIEW
+                        </Link>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
@@ -174,6 +199,14 @@ export default class Feed extends React.Component<IFeedProps, IFeedState> {
                         text="1234"
                       />
                       <Icon icon="lar la-heart" fontSize="1.7rem" text="1234" />
+                      <div style={{ textAlign: "right", width: "100%" }}>
+                        <Link
+                          inlineLine
+                          onClick={() => this.props.history.push("/view")}
+                        >
+                          VIEW
+                        </Link>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
@@ -206,6 +239,14 @@ export default class Feed extends React.Component<IFeedProps, IFeedState> {
                         text="1234"
                       />
                       <Icon icon="lar la-heart" fontSize="1.7rem" text="1234" />
+                      <div style={{ textAlign: "right", width: "100%" }}>
+                        <Link
+                          inlineLine
+                          onClick={() => this.props.history.push("/view")}
+                        >
+                          VIEW
+                        </Link>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
@@ -240,6 +281,14 @@ export default class Feed extends React.Component<IFeedProps, IFeedState> {
                         text="1234"
                       />
                       <Icon icon="lar la-heart" fontSize="1.7rem" text="1234" />
+                      <div style={{ textAlign: "right", width: "100%" }}>
+                        <Link
+                          inlineLine
+                          onClick={() => this.props.history.push("/view")}
+                        >
+                          VIEW
+                        </Link>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
@@ -274,6 +323,14 @@ export default class Feed extends React.Component<IFeedProps, IFeedState> {
                         text="1234"
                       />
                       <Icon icon="lar la-heart" fontSize="1.7rem" text="1234" />
+                      <div style={{ textAlign: "right", width: "100%" }}>
+                        <Link
+                          inlineLine
+                          onClick={() => this.props.history.push("/view")}
+                        >
+                          VIEW
+                        </Link>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
@@ -309,6 +366,14 @@ export default class Feed extends React.Component<IFeedProps, IFeedState> {
                         text="1234"
                       />
                       <Icon icon="lar la-heart" fontSize="1.7rem" text="1234" />
+                      <div style={{ textAlign: "right", width: "100%" }}>
+                        <Link
+                          inlineLine
+                          onClick={() => this.props.history.push("/view")}
+                        >
+                          VIEW
+                        </Link>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>

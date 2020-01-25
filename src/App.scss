@@ -3,12 +3,34 @@
 }
 
 .feed-content {
-  padding: 20px;
+  width: 90%;
+  max-width: 1920px;
+	margin: 10px auto;
+	
+	.Grid-root {
+		@media screen and (max-width: 1550px) {
+			grid-template-columns: 1fr 1fr 1fr !important;
+		}
+		@media screen and (max-width: 1000px) {
+			grid-template-columns: 1fr 1fr !important;
+		}
+		@media screen and (max-width: 700px) {
+			grid-template-columns: 1fr !important;
+		}
+	}
 }
+
 
 .card-stats {
   display: flex;
   & > div {
     margin-right: 20px;
   }
+}
+
+.overlay {
+  padding: 20px;
+  border: solid white 1px;
+  border-radius: 3px;
+  color: white;
 }
