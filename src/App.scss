@@ -2,6 +2,41 @@
   margin-bottom: 20px;
 }
 
+.model {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(56, 56, 56, 0.7);
+  z-index: 9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .CallToAction-root {
+    width: auto;
+  }
+
+  .content-text-editor {
+    line-height: 1.6rem;
+    letter-spacing: 1px;
+    font-family: "Raleway-Regular";
+    padding: 5px;
+    box-sizing: border-box;
+    outline: none;
+    border: none;
+    background-color: rgb(250, 250, 250);
+
+    &:focus {
+      // outline: 1px solid rgb(155, 155, 155);
+      outline: none;
+      box-shadow: 0 0px 3px 1px rgb(212, 212, 212);
+      border: none;
+    }
+  }
+}
+
 .feed-content {
   width: 90%;
   max-width: 1920px;
@@ -35,27 +70,28 @@
 }
 
 .Profile {
-  & section {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    column-gap: 40px;
-  }
-
-  .newUpload {
-    height: 500px;
-    // background: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px dotted rgb(158, 158, 158);
-    .CallToAction-root {
-      width: auto;
+  .Grid-root {
+    @media screen and (max-width: 1550px) {
+      grid-template-columns: 1fr 1fr 1fr !important;
+    }
+    @media screen and (max-width: 1000px) {
+      grid-template-columns: 1fr 1fr !important;
+    }
+    @media screen and (max-width: 700px) {
+      grid-template-columns: 1fr !important;
     }
   }
 
-  .Grid-root {
-    margin-top: 0;
+  & section {
+    display: grid;
+    grid-template-columns: 400px 1fr;
+  }
 
+  .Card-root {
+    margin-top: 20px;
+  }
+
+  .Grid-root {
     .CardTitle-root {
       display: flex;
       justify-content: space-between;
@@ -100,5 +136,27 @@
     box-sizing: border-box;
     display: flex;
     justify-content: flex-end;
+  }
+}
+
+.CommandBar-root {
+  width: 100%;
+  border-bottom: solid rgb(201, 201, 201) 1px;
+  box-sizing: border-box;
+  margin-bottom: 20px;
+  margin-top: 40px;
+  display: flex;
+  padding-bottom: 10px;
+  align-items: center;
+  justify-content: space-between;
+
+  .CallToAction-root {
+    width: auto;
+  }
+
+  .far .Link-root {
+    // border: solid 1px grey;
+    margin-left: 20px;
+    box-sizing: border-box;
   }
 }
