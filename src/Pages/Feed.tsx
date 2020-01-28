@@ -133,7 +133,6 @@ export default class Feed extends React.Component<IFeedProps, IFeedState> {
                   shadowSpread={3}
                   style={{ borderRadius: "5px" }}
                 >
-                  <CardImage src="https://picsum.photos/200/300" />{" "}
                   <CardTitle size={5}>
                     {" "}
                     <Persona

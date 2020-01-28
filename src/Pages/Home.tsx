@@ -28,6 +28,11 @@ export default class Home extends React.Component<IHomeProps> {
               displayName: "Login",
               url: "/login",
               iconName: "la la-sign-in-alt"
+            },
+            {
+              displayName: "Profile",
+              url: "/profile:1",
+              iconName: "la la-sign-in-alt"
             }
           ]}
           onNavLinkClick={url => url && this.props.history.push(url)}
