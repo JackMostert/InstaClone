@@ -8,33 +8,58 @@ import ForgotPassword from "./Pages/ForgotPassword";
 import Feed from "./Pages/Feed";
 import View from "./Pages/View";
 import Profile from "./Pages/Profile";
+import { withCookies } from "react-cookie";
+import Cookies from "universal-cookie";
+import Unauth from "./Pages/Unauth";
+const cookies: any = new Cookies();
 
 const App: React.FC = () => {
   return (
     <div className="App">
       <Router>
-        <Route exact path="/" render={props => <Home {...props} />} />
-        <Route exact path="/login" render={props => <Login {...props} />} />
-        <Route exact path="/feed" render={props => <Feed {...props} />} />
-        <Route exact path="/view:id" render={props => <View {...props} />} />
+        <Route
+          exact
+          path="/"
+          render={props => <Home {...props} cookie={cookies} />}
+        />
+        <Route
+          exact
+          path="/Unauth"
+          render={props => <Unauth {...props} cookie={cookies} />}
+        />
+        <Route
+          exact
+          path="/login"
+          render={props => <Login {...props} cookie={cookies} />}
+        />
+        <Route
+          exact
+          path="/feed"
+          render={props => <Feed {...props} cookie={cookies} />}
+        />
+        <Route
+          exact
+          path="/view:id"
+          render={props => <View {...props} cookie={cookies} />}
+        />
         <Route
           exact
           path="/profile:id"
-          render={props => <Profile {...props} />}
+          render={props => <Profile {...props} cookie={cookies} />}
         />
         <Route
           exact
           path="/register"
-          render={props => <Register {...props} />}
+          render={props => <Register {...props} cookie={cookies} />}
         />
         <Route
           exact
           path="/forgotpassword"
-          render={props => <ForgotPassword {...props} />}
+          render={props => <ForgotPassword {...props} cookie={cookies} />}
         />
       </Router>
     </div>
   );
 };
 
-export default App;
+export default withCookies(App);

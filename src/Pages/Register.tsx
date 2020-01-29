@@ -6,12 +6,58 @@ import { Grid } from "../Personal-Design-Language/Grid/Grid";
 import TextInput from "../Personal-Design-Language/TextInput/Index";
 import PageGroup from "../Personal-Design-Language/PageGroup/Index";
 import CallToAction from "../Personal-Design-Language/CallToAction/Index";
+import Axios from "axios";
+import Cookies from "universal-cookie";
+const cookies: any = new Cookies();
 
 export interface IRegisterProps {
   history: any;
+  cookie: any;
 }
 
-export default class Register extends React.Component<IRegisterProps> {
+export interface IRegisterState {
+  email?: string;
+  username?: string;
+  password?: string;
+  error?: string;
+}
+
+export default class Register extends React.Component<
+  IRegisterProps,
+  IRegisterState
+> {
+  constructor(props: IRegisterProps) {
+    super(props);
+
+    this.state = { email: "", username: "", password: "", error: "" };
+  }
+
+  private onSubmit = () => {
+    const { email, username, password } = this.state;
+    const formData = new FormData();
+    formData.append("fullname", "");
+    formData.append("username", username || "");
+    formData.append("email", email || "");
+    formData.append("password", password || "");
+
+    Axios.post(
+      "http://localhost/InstaClone/backend/" + "register.php",
+      formData
+    )
+      .then(re => {
+        if (re.data.Sstatus) {
+          let d = new Date();
+          d.setTime(d.getTime() + 1 * 60 * 1000);
+          this.props.cookie.set("token", re.data.message, { path: "/" });
+        } else {
+          this.setState({ error: re.data.message });
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+
   public render() {
     return (
       <div className="Home">
@@ -31,6 +77,11 @@ export default class Register extends React.Component<IRegisterProps> {
             {
               displayName: "Login",
               url: "/login",
+              iconName: "la la-sign-in-alt"
+            },
+            {
+              displayName: "Profile",
+              url: "/profile:1",
               iconName: "la la-sign-in-alt"
             }
           ]}
@@ -52,9 +103,15 @@ export default class Register extends React.Component<IRegisterProps> {
               <Header hNumber={4} alignment="center">
                 Register
               </Header>
-              <form>
+              <form
+                onSubmit={event => {
+                  event.preventDefault();
+                  this.onSubmit();
+                }}
+              >
                 <Grid row={0} col={0} rowGap="20px">
                   <TextInput
+                    onChange={value => this.setState({ email: value })}
                     autoFocus={true}
                     style={{ width: "80%", margin: "0 auto" }}
                     borderRadius={3}
@@ -64,6 +121,7 @@ export default class Register extends React.Component<IRegisterProps> {
                     required={true}
                   />
                   <TextInput
+                    onChange={value => this.setState({ username: value })}
                     style={{ width: "80%", margin: "0 auto" }}
                     borderRadius={3}
                     type="text"
@@ -72,6 +130,7 @@ export default class Register extends React.Component<IRegisterProps> {
                     required={true}
                   />
                   <TextInput
+                    onChange={value => this.setState({ password: value })}
                     style={{ width: "80%", margin: "0 auto" }}
                     borderRadius={3}
                     type="password"
@@ -79,6 +138,9 @@ export default class Register extends React.Component<IRegisterProps> {
                     labelValue="Password"
                     required={true}
                   />
+                  <p style={{ textAlign: "center", color: "#C62121" }}>
+                    {this.state.error}
+                  </p>
                   <div style={{ margin: "0 auto", width: "80%" }}>
                     <CallToAction size={5}>Register</CallToAction>
                   </div>

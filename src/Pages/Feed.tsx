@@ -11,6 +11,7 @@ import { Link } from "../Personal-Design-Language/Link/Link";
 
 export interface IFeedProps {
   history: any;
+  cookie: any;
 }
 
 export interface IFeedState {}
@@ -41,6 +42,11 @@ export default class Feed extends React.Component<IFeedProps, IFeedState> {
             {
               displayName: "Login",
               url: "/login",
+              iconName: "la la-sign-in-alt"
+            },
+            {
+              displayName: "Profile",
+              url: "/profile:1",
               iconName: "la la-sign-in-alt"
             }
           ]}

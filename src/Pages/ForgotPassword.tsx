@@ -7,6 +7,7 @@ import Link from "../Personal-Design-Language/Link/Index";
 
 export interface IForgotPasswordProps {
   history: any;
+  cookie: any;
 }
 
 export default class ForgotPassword extends React.Component<
@@ -31,6 +32,11 @@ export default class ForgotPassword extends React.Component<
             {
               displayName: "Login",
               url: "/login",
+              iconName: "la la-sign-in-alt"
+            },
+            {
+              displayName: "Profile",
+              url: "/profile:1",
               iconName: "la la-sign-in-alt"
             }
           ]}

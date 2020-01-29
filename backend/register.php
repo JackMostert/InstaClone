@@ -19,14 +19,12 @@ if ($_POST) {
 	$Validate = new Validate();
 
 	//returns data if everything is ok or will return false
-	$data->FullName = $Validate->_input($Validate->_array($_POST, "fullname"));
 	$data->Username = $Validate->_input($Validate->_array($_POST, "username"));
 	$data->Email = $Validate->_email($Validate->_array($_POST, "email"));
 	$data->ID = $data->Email;
 	$data->Password = $Validate->_array($_POST, "password");
 
 	if (
-		!$data->FullName ||
 		!$data->Username ||
 		!$data->Email ||
 		!$data->ID ||

@@ -13,6 +13,7 @@ import TextInput from "../Personal-Design-Language/TextInput/Index";
 
 export interface IViewProps {
   history: any;
+  cookie: any;
 }
 
 export interface IViewState {
@@ -48,6 +49,11 @@ export default class View extends React.Component<IViewProps, IViewState> {
             {
               displayName: "Login",
               url: "/login",
+              iconName: "la la-sign-in-alt"
+            },
+            {
+              displayName: "Profile",
+              url: "/profile:1",
               iconName: "la la-sign-in-alt"
             }
           ]}

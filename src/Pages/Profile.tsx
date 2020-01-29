@@ -16,6 +16,7 @@ import { Grid } from "../Personal-Design-Language/Grid/Grid";
 
 export interface IProfileProps {
   history: any;
+  cookie: any;
 }
 
 export interface IProfileState {
@@ -48,6 +49,10 @@ export default class Profile extends React.Component<
   }
 
   public render() {
+    if (!this.props.cookie.get("token")) {
+      this.props.history.push("/Unauth");
+    }
+
     return (
       <div className="Profile">
         <div
@@ -122,6 +127,11 @@ export default class Profile extends React.Component<
               {
                 displayName: "Login",
                 url: "/login",
+                iconName: "la la-sign-in-alt"
+              },
+              {
+                displayName: "Profile",
+                url: "/profile:1",
                 iconName: "la la-sign-in-alt"
               }
             ]}

@@ -4,15 +4,50 @@ import { Card } from "../Personal-Design-Language/Card/Card";
 import Header from "../Personal-Design-Language/Header/Index";
 import { Grid } from "../Personal-Design-Language/Grid/Grid";
 import TextInput from "../Personal-Design-Language/TextInput/Index";
-import PageGroup from "../Personal-Design-Language/PageGroup/Index";
 import CallToAction from "../Personal-Design-Language/CallToAction/Index";
 import Link from "../Personal-Design-Language/Link/Index";
+import Axios from "axios";
 
 export interface ILoginProps {
   history: any;
+  cookie: any;
 }
 
-export default class Login extends React.Component<ILoginProps> {
+export interface ILoginState {
+  email?: string;
+  password?: string;
+  error?: string;
+}
+
+export default class Login extends React.Component<ILoginProps, ILoginState> {
+  constructor(props: ILoginProps) {
+    super(props);
+
+    this.state = { email: "", password: "", error: "" };
+  }
+
+  private onSubmit = () => {
+    const { email, password } = this.state;
+    const formData = new FormData();
+
+    formData.append("email", email || "");
+    formData.append("password", password || "");
+
+    Axios.post("http://localhost/InstaClone/backend/" + "login.php", formData)
+      .then(re => {
+        if (re.data.Sstatus) {
+          let d = new Date();
+          d.setTime(d.getTime() + 1 * 60 * 1000);
+          this.props.cookie.set("token", re.data.message, { path: "/" });
+        } else {
+          this.setState({ error: re.data.message });
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+
   public render() {
     return (
       <div className="Home">
@@ -32,6 +67,11 @@ export default class Login extends React.Component<ILoginProps> {
             {
               displayName: "Login",
               url: "/login",
+              iconName: "la la-sign-in-alt"
+            },
+            {
+              displayName: "Profile",
+              url: "/profile:1",
               iconName: "la la-sign-in-alt"
             }
           ]}
@@ -53,9 +93,15 @@ export default class Login extends React.Component<ILoginProps> {
               <Header hNumber={4} alignment="center">
                 Login
               </Header>
-              <form>
+              <form
+                onSubmit={event => {
+                  event.preventDefault();
+                  this.onSubmit();
+                }}
+              >
                 <Grid row={0} col={0} rowGap="20px">
                   <TextInput
+                    onChange={value => this.setState({ email: value })}
                     autoFocus={true}
                     style={{ width: "80%", margin: "0 auto" }}
                     borderRadius={3}
@@ -65,6 +111,7 @@ export default class Login extends React.Component<ILoginProps> {
                     required={true}
                   />
                   <TextInput
+                    onChange={value => this.setState({ password: value })}
                     style={{ width: "80%", margin: "0 auto" }}
                     borderRadius={3}
                     type="password"
@@ -93,6 +140,9 @@ export default class Login extends React.Component<ILoginProps> {
                           this.props.history.push("/forgotpassword")
                         }
                       />
+                    </p>
+                    <p style={{ textAlign: "center", color: "#C62121" }}>
+                      {this.state.error}
                     </p>
                     <CallToAction size={5}>Login</CallToAction>
                   </div>

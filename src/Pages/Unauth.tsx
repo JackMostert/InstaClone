@@ -1,24 +1,23 @@
 import * as React from "react";
+import image from "../Personal-Design-Language/styles/hugo-information-security.svg";
 import { Page } from "../Personal-Design-Language/Page/Page";
-import { Card } from "../Personal-Design-Language/Card/Card";
 import Header from "../Personal-Design-Language/Header/Index";
-import image from "../Personal-Design-Language/styles/coming-soon.svg";
-import CardTitle from "../Personal-Design-Language/CardTitle/Index";
 
-export interface IHomeProps {
+export interface IUnauthProps {
   history: any;
   cookie: any;
 }
 
-export default class Home extends React.Component<IHomeProps> {
+export default class Unauth extends React.Component<IUnauthProps> {
   public render() {
     return (
-      <div className="Home">
+      <div className="Unauth">
         <Page
           width="100%"
           isRoot
+          pageColor="rgb(245, 245, 245)"
           pageAlignment="center"
-          navLinksNear={[{ displayName: "Home", isHeader: true }]}
+          navLinksNear={[{ displayName: "Feed", isHeader: true }]}
           navLinksFar={[
             { displayName: "Home", url: "/", iconName: "la la-home" },
             { displayName: "Feed", url: "/feed", iconName: "la la-rss" },
@@ -42,16 +41,19 @@ export default class Home extends React.Component<IHomeProps> {
         >
           <div
             style={{
+              width: "90%",
+              maxWidth: "1000px",
+              margin: "0 auto",
+              textAlign: "center",
               display: "flex",
-              alignItems: "center",
+              flexFlow: "column",
               justifyContent: "center",
-              height: "100%"
+              alignItems: "center"
             }}
+            className="page"
           >
-            <Card shadowSpread={5} size="xlarge">
-              <Header hNumber={3}>Welcome</Header>
-              <img src={image} style={{ width: "100%" }}></img>
-            </Card>
+            <Header hNumber={3}>You need to be logged in for this</Header>
+            <img src={image} style={{ width: "100%" }}></img>
           </div>
         </Page>
       </div>
