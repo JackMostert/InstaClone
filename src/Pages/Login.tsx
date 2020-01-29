@@ -39,6 +39,7 @@ export default class Login extends React.Component<ILoginProps, ILoginState> {
           let d = new Date();
           d.setTime(d.getTime() + 1 * 60 * 1000);
           this.props.cookie.set("token", re.data.message, { path: "/" });
+          this.props.history.push("/profile");
         } else {
           this.setState({ error: re.data.message });
         }
@@ -71,7 +72,7 @@ export default class Login extends React.Component<ILoginProps, ILoginState> {
             },
             {
               displayName: "Profile",
-              url: "/profile:1",
+              url: "/profile",
               iconName: "la la-sign-in-alt"
             }
           ]}

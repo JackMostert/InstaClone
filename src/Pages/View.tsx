@@ -53,7 +53,7 @@ export default class View extends React.Component<IViewProps, IViewState> {
             },
             {
               displayName: "Profile",
-              url: "/profile:1",
+              url: "/profile",
               iconName: "la la-sign-in-alt"
             }
           ]}

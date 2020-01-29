@@ -34,7 +34,7 @@ export default class Home extends React.Component<IHomeProps> {
             },
             {
               displayName: "Profile",
-              url: "/profile:1",
+              url: "/profile",
               iconName: "la la-sign-in-alt"
             }
           ]}

@@ -70,8 +70,15 @@ class POST extends DB
 		return $payload;
 	}
 
-	private function findUserByID($ID)
+	public function findUserByID($ID)
 	{
+		$this->Connect();
+		$User_Statement = $this->conn->prepare("SELECT * FROM Users WHERE ID = ?");
+		$User_Statement->bind_param("s", $ID);
+		$User_Statement->execute();
+		$Result = $User_Statement->get_result();
+		return $row = $Result->fetch_assoc();
+		$this->Disconnect();
 	}
 
 	private function checkUserByID($ID)
@@ -85,11 +92,11 @@ class POST extends DB
 		return false;
 	}
 
-	public function uploadImage($_ID, $_Title, $_URL)
+	public function uploadImage($_ID, $_content, $_URL, $_user_id)
 	{
 		$this->Connect();
-		$User_Statement = $this->conn->prepare("INSERT INTO images(ID, Title, URL) VALUES (?,?,?)");
-		$User_Statement->bind_param("sss", $_ID, $_Title, $_URL);
+		$User_Statement = $this->conn->prepare("INSERT INTO images(ID, content, URL, user_id) VALUES (?,?,?,?)");
+		$User_Statement->bind_param("ssss", $_ID, $_content, $_URL, $_user_id);
 		$User_Statement->execute();
 		$this->Disconnect();
 	}

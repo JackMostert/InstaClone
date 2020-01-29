@@ -36,7 +36,7 @@ export default class ForgotPassword extends React.Component<
             },
             {
               displayName: "Profile",
-              url: "/profile:1",
+              url: "/profile",
               iconName: "la la-sign-in-alt"
             }
           ]}

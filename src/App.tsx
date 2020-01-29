@@ -44,7 +44,7 @@ const App: React.FC = () => {
         />
         <Route
           exact
-          path="/profile:id"
+          path="/profile"
           render={props => <Profile {...props} cookie={cookies} />}
         />
         <Route

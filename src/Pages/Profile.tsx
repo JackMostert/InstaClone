@@ -13,6 +13,7 @@ import TextInput from "../Personal-Design-Language/TextInput/Index";
 import { Text } from "../Personal-Design-Language/Text/Text";
 import CallToAction from "../Personal-Design-Language/CallToAction/Index";
 import { Grid } from "../Personal-Design-Language/Grid/Grid";
+import Axios from "axios";
 
 export interface IProfileProps {
   history: any;
@@ -24,10 +25,11 @@ export interface IProfileState {
   usernameField: string;
   emailField: string;
   newImage: {
-    isEditing: boolean;
+    isEditing?: boolean;
     image?: any;
     content?: string;
   };
+  imageURL: any;
 }
 
 export default class Profile extends React.Component<
@@ -44,9 +46,47 @@ export default class Profile extends React.Component<
         isEditing: false,
         image: undefined,
         content: ""
-      }
+      },
+      imageURL: "https://via.placeholder.com/600x400"
     };
   }
+
+  private imageRef = React.createRef<HTMLInputElement>();
+
+  private postImage = () => {
+    const formData = new FormData();
+    if (this.state.newImage.image) {
+      formData.append(
+        "image",
+        this.state.newImage.image,
+        this.state.newImage.image.name
+      );
+    }
+
+    formData.append("content", this.state.newImage.content || "");
+    formData.append("user_id", this.props.cookie.get("token"));
+
+    Axios.post(
+      "http://localhost/InstaClone/backend/" + "upload_file.php",
+      formData,
+      {
+        headers: {
+          "Content-Type": `multipart/form-data;`
+        }
+      }
+    )
+      .then(re => {
+        if (re.data.Sstatus) {
+          this.setState({
+            imageURL: "",
+            newImage: { content: "", image: "", isEditing: false }
+          });
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
 
   public render() {
     if (!this.props.cookie.get("token")) {
@@ -60,8 +100,45 @@ export default class Profile extends React.Component<
           style={{ display: this.state.newImage.isEditing ? "flex" : "none" }}
         >
           <Card size="large" shadowSpread={5} style={{ borderRadius: "5px" }}>
-            <CardImage src="https://via.placeholder.com/600x400">
-              <CallToAction size={3}>Add Image</CallToAction>
+            <CardImage src={this.state.imageURL}>
+              <CallToAction
+                size={3}
+                onClick={() => {
+                  this.imageRef.current?.click();
+                }}
+              >
+                Add Image
+              </CallToAction>
+              <input
+                ref={this.imageRef}
+                style={{ display: "none" }}
+                type="file"
+                id="file"
+                onChange={event => {
+                  console.log(event.target.files);
+
+                  if (
+                    !!event.target.files &&
+                    event.target.files?.length !== 0
+                  ) {
+                    this.setState({
+                      newImage: {
+                        image: event.target.files[0],
+                        isEditing: true,
+                        content: this.state.newImage.content
+                      },
+                      imageURL:
+                        (URL.createObjectURL &&
+                          URL.createObjectURL(event.target.files[0])) ||
+                        this.state.imageURL
+                    });
+                  } else {
+                    this.setState({
+                      imageURL: "https://via.placeholder.com/600x400"
+                    });
+                  }
+                }}
+              ></input>
             </CardImage>
             <CardTitle size={5}>
               <Persona
@@ -75,6 +152,15 @@ export default class Profile extends React.Component<
                 placeholder="Type a message..."
                 className="content-text-editor"
                 value={this.state.newImage.content}
+                onChange={value => {
+                  this.setState({
+                    newImage: {
+                      content: value.currentTarget.value,
+                      isEditing: true,
+                      image: this.state.newImage.image
+                    }
+                  });
+                }}
                 style={{
                   width: "100%",
                   height: "200px",
@@ -83,7 +169,14 @@ export default class Profile extends React.Component<
               ></textarea>
               <br></br>
               <div className="card-stats">
-                <Link inlineLine onClick={() => alert("image posted")}>
+                <Link
+                  inlineLine
+                  onClick={() => {
+                    if (this.state.newImage.content) {
+                      this.postImage();
+                    }
+                  }}
+                >
                   POST
                 </Link>
                 <div style={{ textAlign: "right", width: "100%" }}>
@@ -131,7 +224,7 @@ export default class Profile extends React.Component<
               },
               {
                 displayName: "Profile",
-                url: "/profile:1",
+                url: "/profile",
                 iconName: "la la-sign-in-alt"
               }
             ]}

@@ -33,7 +33,7 @@ export default class Unauth extends React.Component<IUnauthProps> {
             },
             {
               displayName: "Profile",
-              url: "/profile:1",
+              url: "/profile",
               iconName: "la la-sign-in-alt"
             }
           ]}
