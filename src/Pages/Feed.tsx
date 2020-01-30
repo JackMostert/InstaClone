@@ -27,7 +27,6 @@ export default class Feed extends React.Component<IFeedProps, IFeedState> {
       res => {
         console.log(res);
         let data: any = [];
-        let index = 0;
 
         for (let [key] of Object.entries(res.data)) {
           data.push(res.data[key]);

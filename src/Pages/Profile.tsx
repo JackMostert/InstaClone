@@ -18,6 +18,7 @@ import Axios from "axios";
 export interface IProfileProps {
   history: any;
   cookie: any;
+  match: any;
 }
 
 export interface IProfileState {
@@ -30,6 +31,7 @@ export interface IProfileState {
     content?: string;
   };
   imageURL: any;
+  images: Array<Array<any>>;
 }
 
 export default class Profile extends React.Component<
@@ -38,6 +40,31 @@ export default class Profile extends React.Component<
 > {
   constructor(props: IProfileProps) {
     super(props);
+
+    const formData = new FormData();
+    formData.append("user_id", this.props.cookie.get("token"));
+
+    Axios.post(
+      "http://localhost/InstaClone/backend/" + "getUserImages.php",
+      formData
+    ).then(res => {
+      let data: any = [[], [], [], []];
+      let index = 0;
+
+      for (let [key] of Object.entries(res.data)) {
+        if (index === 4) {
+          index = 0;
+        }
+        data[index].push(res.data[key]);
+        index++;
+			}
+			
+			console.log(data);
+			
+
+      this.setState({ images: data });
+    });
+
     this.state = {
       isEditing: false,
       usernameField: "jmgxymp",
@@ -47,7 +74,8 @@ export default class Profile extends React.Component<
         image: undefined,
         content: ""
       },
-      imageURL: "https://via.placeholder.com/600x400"
+      imageURL: "https://via.placeholder.com/600x400",
+      images: []
     };
   }
 
@@ -335,8 +363,61 @@ export default class Profile extends React.Component<
                 </div>
               </div>
               <Grid row={0} col={4} colGap="20px" rowGap="20px">
-                <div>
-                  <Card
+                {this.state.images.map((el, index) => (
+                  <div>
+                    {el.map(card => (
+                      <Card
+                        size="fill"
+                        shadowSpread={3}
+                        style={{ borderRadius: "5px" }}
+                      >
+                        {card.ImageURL && (
+                          <CardImage
+                            src={
+                              "http://localhost/InstaClone/backend/" +
+                              card.ImageURL
+                            }
+                          ></CardImage>
+                        )}
+                        <CardTitle size={5}>
+                          <Persona
+                            size={45}
+                            src="https://randomuser.me/api/portraits/men/75.jpg"
+                            text={card.Username}
+                          />
+                        </CardTitle>
+                        <CardContent>
+                          {card.ImageContent} <br></br>
+                          <br></br>
+                          <br></br>
+                          <div className="card-stats">
+                            <Icon
+                              icon="lar la-comments"
+                              fontSize="1.7rem"
+                              text="1234"
+                            />
+                            <Icon
+                              icon="lar la-heart"
+                              fontSize="1.7rem"
+                              text="1234"
+                            />
+                            <div style={{ textAlign: "right", width: "100%" }}>
+                              <Link
+                                inlineLine
+                                onClick={() => this.props.history.push("/view")}
+                              >
+                                VIEW
+                              </Link>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                ))}
+
+                {/* <div> */}
+                {/* <Card
                     size="fill"
                     shadowSpread={3}
                     style={{ borderRadius: "5px" }}
@@ -584,7 +665,7 @@ export default class Profile extends React.Component<
                       </div>
                     </CardContent>
                   </Card>
-                </div>
+                </div> */}
               </Grid>
             </div>
           </Page>
