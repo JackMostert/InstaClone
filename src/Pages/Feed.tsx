@@ -16,7 +16,7 @@ export interface IFeedProps {
 }
 
 export interface IFeedState {
-  images: Array<Array<any>>;
+  images: Array<any>;
 }
 
 export default class Feed extends React.Component<IFeedProps, IFeedState> {
@@ -25,15 +25,12 @@ export default class Feed extends React.Component<IFeedProps, IFeedState> {
 
     Axios.get("http://localhost/InstaClone/backend/" + "getImages.php").then(
       res => {
-        let data: any = [[], [], [], [], []];
+        console.log(res);
+        let data: any = [];
         let index = 0;
 
         for (let [key] of Object.entries(res.data)) {
-          if (index === 5) {
-            index = 0;
-          }
-          data[index].push(res.data[key]);
-          index++;
+          data.push(res.data[key]);
         }
 
         this.setState({ images: data });
@@ -51,6 +48,9 @@ export default class Feed extends React.Component<IFeedProps, IFeedState> {
           isRoot
           pageColor="rgb(245, 245, 245)"
           pageAlignment="center"
+          navigationOptions={{
+            style: "fixed"
+          }}
           navLinksNear={[{ displayName: "Feed", isHeader: true }]}
           navLinksFar={[
             { displayName: "Home", url: "/", iconName: "la la-home" },
@@ -74,57 +74,56 @@ export default class Feed extends React.Component<IFeedProps, IFeedState> {
           onNavLinkClick={url => url && this.props.history.push(url)}
         >
           <div className="feed-content">
-            <Grid col={5} row={0} colGap="20px" rowGap="20px">
-              {this.state.images.map((el, index) => (
+            <Grid col={1} row={0} colGap="20px" rowGap="20px">
+              {this.state.images.map(card => (
                 <div>
-                  {el.map(card => (
-                    <Card
-                      size="fill"
-                      shadowSpread={3}
-                      style={{ borderRadius: "5px" }}
-                    >
-                      {card.ImageURL && (
-                        <CardImage
-                          src={
-                            "http://localhost/InstaClone/backend/" +
-                            card.ImageURL
-                          }
-                        ></CardImage>
-                      )}
-                      <CardTitle size={5}>
-                        <Persona
-                          size={45}
-                          src="https://randomuser.me/api/portraits/men/75.jpg"
-                          text={card.Username}
+                  <Card
+                    size="fill"
+                    shadowSpread={3}
+                    style={{ borderRadius: "5px" }}
+                  >
+                    {card.ImageURL && (
+                      <CardImage
+                        src={
+                          "http://localhost/InstaClone/backend/" + card.ImageURL
+                        }
+                      ></CardImage>
+                    )}
+                    <CardTitle size={5}>
+                      <Persona
+                        size={45}
+                        src="https://randomuser.me/api/portraits/men/75.jpg"
+                        text={card.Username}
+                      />
+                    </CardTitle>
+                    <CardContent>
+                      {card.ImageContent} <br></br>
+                      <br></br>
+                      <br></br>
+                      <div className="card-stats">
+                        <Icon
+                          icon="lar la-comments"
+                          fontSize="1.7rem"
+                          text="1234"
                         />
-                      </CardTitle>
-                      <CardContent>
-                        {card.ImageContent} <br></br>
-                        <br></br>
-                        <br></br>
-                        <div className="card-stats">
-                          <Icon
-                            icon="lar la-comments"
-                            fontSize="1.7rem"
-                            text="1234"
-                          />
-                          <Icon
-                            icon="lar la-heart"
-                            fontSize="1.7rem"
-                            text="1234"
-                          />
-                          <div style={{ textAlign: "right", width: "100%" }}>
-                            <Link
-                              inlineLine
-                              onClick={() => this.props.history.push("/view")}
-                            >
-                              VIEW
-                            </Link>
-                          </div>
+                        <Icon
+                          icon="lar la-heart"
+                          fontSize="1.7rem"
+                          text="1234"
+                        />
+                        <div style={{ textAlign: "right", width: "100%" }}>
+                          <Link
+                            inlineLine
+                            onClick={() =>
+                              this.props.history.push(`/view${card.ImageID}`)
+                            }
+                          >
+                            VIEW
+                          </Link>
                         </div>
-                      </CardContent>
-                    </Card>
-                  ))}
+                      </div>
+                    </CardContent>
+                  </Card>
                 </div>
               ))}
             </Grid>

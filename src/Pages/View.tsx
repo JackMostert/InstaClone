@@ -10,22 +10,40 @@ import { Page } from "../Personal-Design-Language/Page/Page";
 import PageGroup from "../Personal-Design-Language/PageGroup/Index";
 import Header from "../Personal-Design-Language/Header/Index";
 import TextInput from "../Personal-Design-Language/TextInput/Index";
+import Axios from "axios";
 
 export interface IViewProps {
   history: any;
   cookie: any;
+  match: any;
 }
 
 export interface IViewState {
   hasLikedImage: boolean;
+  data?: any;
 }
 
 export default class View extends React.Component<IViewProps, IViewState> {
   constructor(props: IViewProps) {
     super(props);
 
+    const formData = new FormData();
+    formData.append("ID", this.props.match.params.id);
+
+    Axios.post(
+      "http://localhost/InstaClone/backend/" + "getImage.php",
+      formData
+    ).then(res => {
+      this.setState({ data: res.data });
+    });
+
     this.state = {
-      hasLikedImage: false
+      hasLikedImage: false,
+      data: {
+        Username: "",
+        ImageURL: "",
+        ImageContent: ""
+      }
     };
   }
 
@@ -61,11 +79,9 @@ export default class View extends React.Component<IViewProps, IViewState> {
         >
           <div
             style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexFlow: "column",
-              height: "100%"
+              width: " 90%",
+              maxWidth: "1000px",
+              margin: "0 auto"
             }}
           >
             <PageGroup>
@@ -74,24 +90,27 @@ export default class View extends React.Component<IViewProps, IViewState> {
                 shadowSpread={3}
                 style={{
                   borderRadius: "5px",
-                  maxWidth: "1000px",
-                  marginTop: "3%",
-                  width: "90%"
+                  marginTop: "3%"
                 }}
               >
-                <CardImage src="https://picsum.photos/400/300"></CardImage>
+                {!!this.state.data.ImageURL && (
+                  <CardImage
+                    src={
+                      "http://localhost/InstaClone/backend/" +
+                      this.state.data.ImageURL
+                    }
+                  ></CardImage>
+                )}
                 <CardTitle size={5}>
                   <Persona
                     size={45}
                     src="https://randomuser.me/api/portraits/men/75.jpg"
-                    text="cezer121"
+                    text={this.state.data.Username}
                   />
                 </CardTitle>
                 <CardContent>
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                  Voluptates nemo harum nesciunt magnam, hic minima accusantium
-                  doloremque. Id voluptas aliquid similique incidunt ipsa
-                  necessitatibus. Quo impedit et eligendi ea aliquam. <br></br>
+                  {this.state.data.ImageContent}
+                  <br></br>
                   <br></br>
                   <br></br>
                   <div className="card-stats">
@@ -126,8 +145,7 @@ export default class View extends React.Component<IViewProps, IViewState> {
                 borderRadius={5}
                 labelValue="Write your comment"
                 style={{
-                  maxWidth: "1000px",
-                  width: "90%",
+									width: '100%',
                   boxShadow: "0px 0px 9px 1px rgba(0, 0, 0, 0.2);"
                 }}
               ></TextInput>
@@ -136,8 +154,7 @@ export default class View extends React.Component<IViewProps, IViewState> {
                 shadowSpread={3}
                 style={{
                   borderRadius: "5px",
-                  maxWidth: "1000px",
-                  width: "90%",
+                  width: "100%",
                   marginTop: "20px"
                 }}
               >

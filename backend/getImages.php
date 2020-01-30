@@ -9,7 +9,7 @@ $res = new Res();
 $db = new DB();
 
 $db->Connect();
-$User_Statement = $db->conn->prepare("SELECT * FROM images");
+$User_Statement = $db->conn->prepare("SELECT * FROM images ORDER BY date_added DESC");
 $User_Statement->execute();
 $Result = $User_Statement->get_result();
 $array1 = array();
@@ -23,7 +23,6 @@ header('Content-Type: text/html; charset=UTF-8');
 while ($row_data = $Result->fetch_assoc()) {
 	array_push($array1, $row_data);
 }
-
 
 foreach ($array1 as $value) {
 	//code to be executed; 

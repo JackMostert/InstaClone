@@ -49,22 +49,33 @@
   }
 }
 
+.Feed .Page-content {
+  position: relative;
+  overflow: hidden;
+
+  & > div:nth-child(2) {
+    position: absolute;
+    overflow-y: auto;
+    top: 60px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+
+  .NavigationBar-root {
+    z-index: 999;
+  }
+}
+
+.CardTitle-root {
+  background: #00000005;
+  border-bottom: 1px solid #e8e8e8;
+}
+
 .feed-content {
   width: 90%;
-  max-width: 1920px;
-  margin: 10px auto;
-
-  .Grid-root {
-    @media screen and (max-width: 1550px) {
-      grid-template-columns: 1fr 1fr 1fr !important;
-    }
-    @media screen and (max-width: 1000px) {
-      grid-template-columns: 1fr 1fr !important;
-    }
-    @media screen and (max-width: 700px) {
-      grid-template-columns: 1fr !important;
-    }
-  }
+  max-width: 900px;
+  margin: 60px auto 20px auto;
 }
 
 .card-stats {
