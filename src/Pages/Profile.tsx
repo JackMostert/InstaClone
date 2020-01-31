@@ -57,10 +57,9 @@ export default class Profile extends React.Component<
         }
         data[index].push(res.data[key]);
         index++;
-			}
-			
-			console.log(data);
-			
+      }
+
+      console.log(data);
 
       this.setState({ images: data });
     });
@@ -143,8 +142,6 @@ export default class Profile extends React.Component<
                 type="file"
                 id="file"
                 onChange={event => {
-                  console.log(event.target.files);
-
                   if (
                     !!event.target.files &&
                     event.target.files?.length !== 0
@@ -200,9 +197,7 @@ export default class Profile extends React.Component<
                 <Link
                   inlineLine
                   onClick={() => {
-                    if (this.state.newImage.content) {
-                      this.postImage();
-                    }
+                    this.postImage();
                   }}
                 >
                   POST
@@ -281,18 +276,7 @@ export default class Profile extends React.Component<
                     maxHeight: this.state.isEditing ? "560px" : "500px"
                   }}
                 >
-                  <div className="edit">
-                    {!this.state.isEditing && (
-                      <Link
-                        inlineLine
-                        onClick={() => {
-                          this.setState({ isEditing: true });
-                        }}
-                      >
-                        Edit
-                      </Link>
-                    )}
-                  </div>
+                  <div className="edit"></div>
                   <CardTitle size="">
                     {" "}
                     <Persona

@@ -47,6 +47,17 @@ export default class View extends React.Component<IViewProps, IViewState> {
     };
   }
 
+  private postLike = () => {
+    const formData = new FormData();
+    formData.append("userID", this.props.cookie.get("token"));
+    formData.append("imageID", this.props.match.params.id);
+
+    Axios.post(
+      "http://localhost/InstaClone/backend/" + "postLike.php",
+      formData
+    );
+  };
+
   public render() {
     return (
       <div>
@@ -125,11 +136,12 @@ export default class View extends React.Component<IViewProps, IViewState> {
                     >
                       <Link
                         inlineLine={this.state.hasLikedImage}
-                        onClick={() =>
+                        onClick={() => {
                           this.setState({
                             hasLikedImage: !this.state.hasLikedImage
-                          })
-                        }
+                          });
+                          this.postLike();
+                        }}
                         iconProps={{ icon: "la la-heart", fontSize: "2rem" }}
                       ></Link>
                     </div>
@@ -145,7 +157,7 @@ export default class View extends React.Component<IViewProps, IViewState> {
                 borderRadius={5}
                 labelValue="Write your comment"
                 style={{
-									width: '100%',
+                  width: "100%",
                   boxShadow: "0px 0px 9px 1px rgba(0, 0, 0, 0.2);"
                 }}
               ></TextInput>

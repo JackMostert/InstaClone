@@ -100,4 +100,13 @@ class POST extends DB
 		$User_Statement->execute();
 		$this->Disconnect();
 	}
+
+	public function postlike($user_id, $userID, $imageID)
+	{
+		$this->Connect();
+		$User_Statement = $this->conn->prepare("INSERT INTO likes(ID, user_id, image_id) VALUES (?,?,?)");
+		$User_Statement->bind_param("sss", $user_id, $userID, $imageID);
+		$User_Statement->execute();
+		$this->Disconnect();
+	}
 }
