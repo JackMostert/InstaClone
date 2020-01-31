@@ -32,6 +32,14 @@ foreach ($array1 as $value) {
 	$payload->ImageURL = $value['URL'];
 	$payload->ImageContent = $value['content'];
 	$payload->ImageID = $value['ID'];
+
+	$User_Statement = $Post->getLike($value['ID']);
+	$Result = $User_Statement->get_result();
+	$row_data = $Result->fetch_assoc();
+
+	$payload->CommentCount = $Post->countComments($value['ID'])['total'];
+
+	$payload->LikeCount = $row_data['total'];
 	array_push($array2, $payload);
 }
 

@@ -10,6 +10,8 @@ $db = new DB();
 
 $ID = $_POST['ID'];
 
+$array1 = array();
+
 $db->Connect();
 $User_Statement = $db->conn->prepare("SELECT * FROM images WHERE ID = ?");
 $User_Statement->bind_param("s", $ID);
@@ -29,6 +31,27 @@ $payload->Username = $data['Username'];
 $payload->ImageURL = $row_data['URL'];
 $payload->ImageContent = $row_data['content'];
 $payload->ImageID = $row_data['ID'];
+
+$User_Statement = $Post->getLike($row_data['ID']);
+$Result = $User_Statement->get_result();
+$row_data = $Result->fetch_assoc();
+
+$commentCountResult = $Post->getComment($payload->ImageID);
+$commentCount = $commentCountResult->get_result();
+$payload->CommentCount = 0;
+
+while ($CCount = $commentCount->fetch_assoc()) {
+	$user = $Post->findUserByID($CCount['user_id']);
+	$userComment = new stdClass();
+	$userComment->Username = $user['Username'];
+	$userComment->Comment = $CCount['comment'];
+	array_push($array1, $userComment);
+	$payload->CommentCount += 1;
+}
+
+$payload->comments = $array1;
+$payload->LikeCount = $row_data['total'];
+
 
 echo json_encode($payload);
 

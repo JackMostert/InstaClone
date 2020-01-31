@@ -101,11 +101,53 @@ class POST extends DB
 		$this->Disconnect();
 	}
 
-	public function postlike($user_id, $userID, $imageID)
+	public function postlike($ID, $userID, $imageID)
 	{
 		$this->Connect();
 		$User_Statement = $this->conn->prepare("INSERT INTO likes(ID, user_id, image_id) VALUES (?,?,?)");
-		$User_Statement->bind_param("sss", $user_id, $userID, $imageID);
+		$User_Statement->bind_param("sss", $ID, $userID, $imageID);
+		$User_Statement->execute();
+		$this->Disconnect();
+	}
+
+	public function getLike($image_id)
+	{
+		$this->Connect();
+		$User_Statement = $this->conn->prepare("SELECT COUNT(*) as total FROM likes WHERE image_id = ?");
+		$User_Statement->bind_param("s", $image_id);
+		$User_Statement->execute();
+		return $User_Statement;
+		$this->Disconnect();
+	}
+
+	public function getComment($image_id)
+	{
+		$this->Connect();
+		$User_Statement = $this->conn->prepare("SELECT *
+		 FROM comments WHERE image_id = ? ORDER BY date_added DESC");
+		$User_Statement->bind_param("s", $image_id);
+		$User_Statement->execute();
+		return $User_Statement;
+		$this->Disconnect();
+	}
+
+	public function countComments($image_id)
+	{
+		$this->Connect();
+		$User_Statement = $this->conn->prepare("SELECT COUNT(*) as total
+		 FROM comments WHERE image_id = ?");
+		$User_Statement->bind_param("s", $image_id);
+		$User_Statement->execute();
+		$Result = $User_Statement->get_result();
+		return $row_data = $Result->fetch_assoc();
+		$this->Disconnect();
+	}
+
+	public function postComment($ID, $userID, $imageID, $comment)
+	{
+		$this->Connect();
+		$User_Statement = $this->conn->prepare("INSERT INTO comments(ID, user_id, comment, image_id) VALUES (?,?,?,?)");
+		$User_Statement->bind_param("ssss", $ID, $userID, $comment, $imageID);
 		$User_Statement->execute();
 		$this->Disconnect();
 	}

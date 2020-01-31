@@ -1,4 +1,5 @@
 <?php
+
 require __DIR__ . '/vendor/autoload.php';
 
 use Firebase\JWT\JWT;
@@ -13,6 +14,7 @@ include "./_env.php";
 
 $userID = $_POST['userID'];
 $imageID = $_POST['imageID'];
+$comment = $_POST['comment'];
 
 function generateRandomString($length = 200)
 {
@@ -27,5 +29,4 @@ $user_id = $decoded->ID;
 
 $Post = new POST();
 
-
-$Post->postlike($ID, $userID, $imageID);
+$Post->postComment($ID, $user_id, $imageID, $comment);

@@ -103,12 +103,12 @@ export default class Feed extends React.Component<IFeedProps, IFeedState> {
                         <Icon
                           icon="lar la-comments"
                           fontSize="1.7rem"
-                          text="1234"
+                          text={card.CommentCount || "0"}
                         />
                         <Icon
                           icon="lar la-heart"
                           fontSize="1.7rem"
-                          text="1234"
+                          text={card.LikeCount || "0"}
                         />
                         <div style={{ textAlign: "right", width: "100%" }}>
                           <Link

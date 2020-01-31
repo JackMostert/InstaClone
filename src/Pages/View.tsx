@@ -11,6 +11,7 @@ import PageGroup from "../Personal-Design-Language/PageGroup/Index";
 import Header from "../Personal-Design-Language/Header/Index";
 import TextInput from "../Personal-Design-Language/TextInput/Index";
 import Axios from "axios";
+import CallToAction from "../Personal-Design-Language/CallToAction/Index";
 
 export interface IViewProps {
   history: any;
@@ -21,6 +22,7 @@ export interface IViewProps {
 export interface IViewState {
   hasLikedImage: boolean;
   data?: any;
+  comment: string;
 }
 
 export default class View extends React.Component<IViewProps, IViewState> {
@@ -42,8 +44,12 @@ export default class View extends React.Component<IViewProps, IViewState> {
       data: {
         Username: "",
         ImageURL: "",
-        ImageContent: ""
-      }
+        ImageContent: "",
+        LikeCount: "",
+        CommentCount: "",
+        comments: []
+      },
+      comment: ""
     };
   }
 
@@ -55,7 +61,19 @@ export default class View extends React.Component<IViewProps, IViewState> {
     Axios.post(
       "http://localhost/InstaClone/backend/" + "postLike.php",
       formData
-    );
+    ).then(res => window.location.reload());
+  };
+
+  private postComment = () => {
+    const formData = new FormData();
+    formData.append("userID", this.props.cookie.get("token"));
+    formData.append("imageID", this.props.match.params.id);
+    formData.append("comment", this.state.comment);
+
+    Axios.post(
+      "http://localhost/InstaClone/backend/" + "postComment.php",
+      formData
+    ).then(res => window.location.reload());
   };
 
   public render() {
@@ -128,9 +146,13 @@ export default class View extends React.Component<IViewProps, IViewState> {
                     <Icon
                       icon="lar la-comments"
                       fontSize="1.7rem"
-                      text="1234"
+                      text={this.state.data.CommentCount}
                     />
-                    <Icon icon="lar la-heart" fontSize="1.7rem" text="1234" />
+                    <Icon
+                      icon="lar la-heart"
+                      fontSize="1.7rem"
+                      text={this.state.data.LikeCount}
+                    />
                     <div
                       style={{ textAlign: "right", width: "100%", margin: "0" }}
                     >
@@ -151,39 +173,51 @@ export default class View extends React.Component<IViewProps, IViewState> {
             </PageGroup>
             <PageGroup>
               <Header hNumber={5}>Comments</Header>
-              <TextInput
-                size={5}
-                type="text"
-                borderRadius={5}
-                labelValue="Write your comment"
+              <div
                 style={{
-                  width: "100%",
-                  boxShadow: "0px 0px 9px 1px rgba(0, 0, 0, 0.2);"
-                }}
-              ></TextInput>
-              <Card
-                size="fill"
-                shadowSpread={3}
-                style={{
-                  borderRadius: "5px",
-                  width: "100%",
-                  marginTop: "20px"
+                  display: "grid",
+                  gridTemplateColumns: "4fr 1fr",
+                  alignItems: "center",
+                  gridColumnGap: "10px"
                 }}
               >
-                <CardTitle size={5}>
-                  <Persona
-                    size={45}
-                    src="https://randomuser.me/api/portraits/men/75.jpg"
-                    text="cezer121"
-                  />
-                </CardTitle>
-                <CardContent>
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Magni
-                  aliquam, quia provident sapiente tempore nihil alias similique
-                  beatae ad molestias cupiditate fugiat laborum natus, quas sunt
-                  sit doloremque molestiae delectus.
-                </CardContent>
-              </Card>
+                <TextInput
+                  size={5}
+                  type="text"
+                  borderRadius={5}
+                  labelValue="Write your comment"
+                  onChange={value => this.setState({ comment: value })}
+                  style={{
+                    width: "100%",
+                    boxShadow: "0px 0px 9px 1px rgba(0, 0, 0, 0.2);"
+                  }}
+                ></TextInput>
+                <div style={{ marginTop: "9px" }}>
+                  <CallToAction size={4} onClick={this.postComment}>
+                    Comment
+                  </CallToAction>
+                </div>
+              </div>
+              {this.state.data.comments.map((el: any) => (
+                <Card
+                  size="fill"
+                  shadowSpread={3}
+                  style={{
+                    borderRadius: "5px",
+                    width: "100%",
+                    marginTop: "20px"
+                  }}
+                >
+                  <CardTitle size={5}>
+                    <Persona
+                      size={45}
+                      src="https://randomuser.me/api/portraits/men/75.jpg"
+                      text={el.Username}
+                    />
+                  </CardTitle>
+                  <CardContent>{el.Comment}</CardContent>
+                </Card>
+              ))}
             </PageGroup>
           </div>
         </Page>
