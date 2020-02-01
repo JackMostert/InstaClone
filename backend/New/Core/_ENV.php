@@ -20,7 +20,7 @@ $_ENV['dbname'] = 'ImagePing';
 
 // For checking the request
 $_ENV['methods'] = array('GET', 'POST', 'DELETE', 'UPDATE');
-$_ENV['tables'] = array('Users', 'Comments', 'Images', 'Likes');
+$_ENV['tables'] = array('Users', 'Comments', 'Posts', 'Likes');
 $_ENV['types'] = array('All', 'Single');
 $_ENV['returnTypes'] = array('Count', 'Data');
 

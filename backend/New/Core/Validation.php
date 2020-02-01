@@ -40,16 +40,35 @@ class Validation
 	*	Description: Checks if provided data matches defined schema
 	* ReturnValue: Boolean
 	*/
-	// public function hasValidStructure($data, $schema): bool
-	// {
-	// }
+	public function hasValidStructure($data, $schema): bool
+	{
+		$SameKeyCount = 0;
+		if (count($data) < count($schema)) return false;
+		foreach ($schema as $key => $value) {
+			if (array_key_exists($key, $data)) $SameKeyCount += 1;
+		}
+		if (count($schema) === $SameKeyCount) return true;
+
+		return false;
+	}
 
 	/*
 	*	Description: Removes any extra data thats not defined in the schema
-	* ReturnValue: inseted data with extra fields removed
+	* ReturnValue: inseted data with extra fields removed or false
 	*/
 	public function cleanValidStructure($data, $schema)
 	{
-		print_r($data);
+		$validData = new stdClass();
+
+		$data = (array) $data;
+		$schema = (array) $schema;
+		$result = $this->hasValidStructure($data, $schema);
+		if ($result === false) return false;
+
+		foreach ($schema as $key => $value) {
+			$validData->$key = $data[$key];
+		}
+
+		return $validData;
 	}
 }
