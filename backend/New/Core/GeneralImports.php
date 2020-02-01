@@ -4,6 +4,8 @@ include(ROOT_PATH . './New/Schemas/Comments.php');
 include(ROOT_PATH . './New/Schemas/Likes.php');
 include(ROOT_PATH . './New/Schemas/Posts.php');
 include(ROOT_PATH . './New/Schemas/Tags.php');
+include(ROOT_PATH . './New/Schemas/RequestSingle.php');
+include(ROOT_PATH . './New/Schemas/RequestAll.php');
 
 include(ROOT_PATH . './New/Core/_ENV.php');
 include(ROOT_PATH . './New/Core/Validation.php');

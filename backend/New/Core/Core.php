@@ -2,21 +2,15 @@
 include "../InitalLoad.php";
 require_once(ROOT_PATH . './New/Core/GeneralImports.php');
 
-
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST');
-header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
-header('Content-Type: text/html; charset=UTF-8');
-
-
 $Request 							= $_POST;
 
 //Validate Request
+$hasValidRoute 				= $Validation->hasKeyWithValidData($Request, 'route', $_ENV['routes']);
 $hasValidMethod 			= $Validation->hasKeyWithValidData($Request, 'method', $_ENV['methods']);
 $hasValidTable 				= $Validation->hasKeyWithValidData($Request, 'table', $_ENV['tables']);
-$hasValidType 				= $Validation->hasKeyWithValidData($Request, 'type', $_ENV['types']);
+$hasValidSchemaType 	= $Validation->hasKeyWithValidData($Request, 'schema', $_ENV['schemas']);
 $hasValidReturnType 	= $Validation->hasKeyWithValidData($Request, 'returnType', $_ENV['returnTypes']);
-$isValidRequest 			= $hasValidMethod && $hasValidTable && $hasValidType && $hasValidReturnType;
+$isValidRequest 			= $hasValidMethod && $hasValidTable && $hasValidReturnType && $hasValidSchemaType && $hasValidRoute;
 
 if ($isValidRequest === false) $Res->sendJSON("Invalid Request", 400, "Error");
 
@@ -25,7 +19,7 @@ switch ($Request['method']) {
 	case 'GET':
 		include(ROOT_PATH . './New/Methods/GET.php');
 		$GET = new GET($Validation, $Res);
-		$result = $GET->begin($Request['table'], $Request['type'], $Request['returnType'], (object) json_decode($Request['data']));
+		$result = $GET->route($Request['table'], $Request['returnType'], $Request['schema'], (object) json_decode($Request['data']), $Request['route']);
 		$Res->sendData($result);
 		break;
 

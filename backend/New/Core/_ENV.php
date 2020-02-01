@@ -19,10 +19,11 @@ $_ENV['passwd'] = '';
 $_ENV['dbname'] = 'ImagePing';
 
 // For checking the request
+$_ENV['routes'] = array('/', '/Feed', '/Profile', '/');
 $_ENV['methods'] = array('GET', 'POST', 'DELETE', 'UPDATE');
 $_ENV['tables'] = array('Users', 'Comments', 'Posts', 'Likes');
-$_ENV['types'] = array('All', 'Single');
 $_ENV['returnTypes'] = array('Count', 'Data');
+$_ENV['schemas'] = array("Users", "Comments", "Likes", "Posts", "Tages", "RequestAll", "RequestSingle");
 
 // Valid Schemas
 $_ENV['Schema'] = array(
@@ -30,5 +31,7 @@ $_ENV['Schema'] = array(
 	'Comments' => $CommentSchema,
 	'Likes' => $LikeSchema,
 	'Posts' => $PostSchema,
-	'Tages' => $TagSchema
+	'Tages' => $TagSchema,
+	'RequestSingle' => $RequestSingleSchema,
+	'RequestAll' => $RequestAllSchema,
 );

@@ -23,18 +23,25 @@ export default class Feed extends React.Component<IFeedProps, IFeedState> {
   constructor(props: IFeedProps) {
     super(props);
 
-    Axios.get("http://localhost/InstaClone/backend/" + "getImages.php").then(
-      res => {
-        console.log(res);
-        let data: any = [];
-
-        for (let [key] of Object.entries(res.data)) {
-          data.push(res.data[key]);
-        }
-
-        this.setState({ images: data });
-      }
+    const formData = new FormData();
+    formData.append("method", "GET");
+    formData.append("table", "Posts");
+    formData.append("schema", "RequestAll");
+    formData.append("returnType", "Data");
+    formData.append("route", "/Feed");
+    formData.append(
+      "data",
+      JSON.stringify({
+        NULL: ""
+      })
     );
+
+    Axios.post(
+      "http://localhost/InstaClone/backend/New/Core/" + "Core.php",
+      formData
+    ).then(res => {
+      this.setState({ images: res.data });
+    });
 
     this.state = { images: [] };
   }
@@ -81,40 +88,38 @@ export default class Feed extends React.Component<IFeedProps, IFeedState> {
                     shadowSpread={3}
                     style={{ borderRadius: "5px" }}
                   >
-                    {card.ImageURL && (
+                    {card.URL && (
                       <CardImage
-                        src={
-                          "http://localhost/InstaClone/backend/" + card.ImageURL
-                        }
+                        src={"http://localhost/InstaClone/backend/" + card.URL}
                       ></CardImage>
                     )}
                     <CardTitle size={5}>
                       <Persona
                         size={45}
                         src="https://randomuser.me/api/portraits/men/75.jpg"
-                        text={card.Username}
+                        text={card.User}
                       />
                     </CardTitle>
                     <CardContent>
-                      {card.ImageContent} <br></br>
+                      {card.content}
                       <br></br>
                       <br></br>
                       <div className="card-stats">
                         <Icon
                           icon="lar la-comments"
                           fontSize="1.7rem"
-                          text={card.CommentCount || "0"}
+                          text={card.Comments || "0"}
                         />
                         <Icon
                           icon="lar la-heart"
                           fontSize="1.7rem"
-                          text={card.LikeCount || "0"}
+                          text={card.Likes || "0"}
                         />
                         <div style={{ textAlign: "right", width: "100%" }}>
                           <Link
                             inlineLine
                             onClick={() =>
-                              this.props.history.push(`/view${card.ImageID}`)
+                              this.props.history.push(`/view${card.ID}`)
                             }
                           >
                             VIEW
