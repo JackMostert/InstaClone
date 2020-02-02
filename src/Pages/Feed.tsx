@@ -9,6 +9,7 @@ import Persona from "../Personal-Design-Language/Persona";
 import Icon from "../Personal-Design-Language/Icon";
 import { Link } from "../Personal-Design-Language/Link/Link";
 import Axios from "axios";
+import CardFooter from "../Personal-Design-Language/CardFooter/Index";
 
 export interface IFeedProps {
   history: any;
@@ -95,15 +96,13 @@ export default class Feed extends React.Component<IFeedProps, IFeedState> {
                     )}
                     <CardTitle size={5}>
                       <Persona
-                        size={45}
-                        src="https://randomuser.me/api/portraits/men/75.jpg"
+                        size={33}
+                        src={`https://avatars.dicebear.com/v2/identicon/${card.ID}.svg`}
                         text={card.User}
                       />
                     </CardTitle>
-                    <CardContent>
-                      {card.content}
-                      <br></br>
-                      <br></br>
+                    {card.content && <CardContent>{card.content}</CardContent>}
+                    <CardFooter>
                       <div className="card-stats">
                         <Icon
                           icon="lar la-comments"
@@ -126,7 +125,7 @@ export default class Feed extends React.Component<IFeedProps, IFeedState> {
                           </Link>
                         </div>
                       </div>
-                    </CardContent>
+                    </CardFooter>
                   </Card>
                 </div>
               ))}
