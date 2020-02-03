@@ -18,6 +18,9 @@ export interface IRegisterProps {
 export interface IRegisterState {
   email?: string;
   username?: string;
+  FirstName?: string;
+  LastName?: string;
+  Age?: string;
   password?: string;
   error?: string;
 }
@@ -29,30 +32,52 @@ export default class Register extends React.Component<
   constructor(props: IRegisterProps) {
     super(props);
 
-    this.state = { email: "", username: "", password: "", error: "" };
+    this.state = {
+      email: "",
+      username: "",
+      password: "",
+      Age: "",
+      FirstName: "",
+      LastName: "",
+      error: ""
+    };
   }
 
   private onSubmit = () => {
-    const { email, username, password } = this.state;
+    const { email, username, password, Age, FirstName, LastName } = this.state;
+
     const formData = new FormData();
-    formData.append("fullname", "");
-    formData.append("username", username || "");
-    formData.append("email", email || "");
-    formData.append("password", password || "");
+    formData.append("method", "POST");
+    formData.append("table", "Users");
+    formData.append("schema", "Users");
+    formData.append("returnType", "Data");
+    formData.append("route", "/Register");
+    formData.append(
+      "data",
+      JSON.stringify({
+        Username: username,
+        Email: email,
+        Password: password,
+        Age: Age,
+        LastName: LastName,
+        FirstName: FirstName,
+        ID: "72389uihj"
+      })
+    );
 
     Axios.post(
-      "http://localhost/InstaClone/backend/" + "register.php",
+      "http://localhost/InstaClone/backend/New/Core/" + "Core.php",
       formData
     )
       .then(re => {
-        if (re.data.Sstatus) {
-          let d = new Date();
-          d.setTime(d.getTime() + 1 * 60 * 1000);
-          this.props.cookie.set("token", re.data.message, { path: "/" });
-          this.props.history.push("/profile");
-        } else {
-          this.setState({ error: re.data.message });
-        }
+        // if (re.data.Sstatus) {
+        //   let d = new Date();
+        //   d.setTime(d.getTime() + 1 * 60 * 1000);
+        //   this.props.cookie.set("token", re.data.message, { path: "/" });
+        //   this.props.history.push("/profile");
+        // } else {
+        //   this.setState({ error: re.data.message });
+        // }
       })
       .catch(err => {
         console.log(err);
@@ -61,7 +86,7 @@ export default class Register extends React.Component<
 
   public render() {
     return (
-      <div className="Home">
+      <div className="Register">
         <Page
           width="100%"
           isRoot
@@ -98,7 +123,7 @@ export default class Register extends React.Component<
           >
             <Card
               shadowSpread={5}
-              size="large"
+              size="xlarge"
               style={{ padding: "30px 10px", borderRadius: "5px" }}
             >
               <Header hNumber={4} alignment="center">
@@ -111,6 +136,49 @@ export default class Register extends React.Component<
                 }}
               >
                 <Grid row={0} col={0} rowGap="20px">
+                  <Grid row={0} col={2} colGap="20px">
+                    <TextInput
+                      // onChange={value => this.setState({ email: value })}
+                      autoFocus={true}
+                      style={{ width: "80%", margin: "0 auto" }}
+                      borderRadius={3}
+                      type="text"
+                      size={5}
+                      labelValue="First Name"
+                      required={true}
+                    />
+                    <TextInput
+                      // onChange={value => this.setState({ email: value })}
+                      autoFocus={true}
+                      style={{ width: "80%", margin: "0 auto" }}
+                      borderRadius={3}
+                      type="text"
+                      size={5}
+                      labelValue="Last Name"
+                      required={true}
+                    />
+                  </Grid>
+                  <Grid row={0} col={2} colGap="20px">
+                    <TextInput
+                      // onChange={value => this.setState({ email: value })}
+                      autoFocus={true}
+                      style={{ width: "80%", margin: "0 auto" }}
+                      borderRadius={3}
+                      type="text"
+                      size={5}
+                      labelValue="Age"
+                      required={true}
+                    />
+                    <TextInput
+                      onChange={value => this.setState({ username: value })}
+                      style={{ width: "80%", margin: "0 auto" }}
+                      borderRadius={3}
+                      type="text"
+                      size={5}
+                      labelValue="Username"
+                      required={true}
+                    />
+                  </Grid>
                   <TextInput
                     onChange={value => this.setState({ email: value })}
                     autoFocus={true}
@@ -119,15 +187,6 @@ export default class Register extends React.Component<
                     type="email"
                     size={5}
                     labelValue="Email"
-                    required={true}
-                  />
-                  <TextInput
-                    onChange={value => this.setState({ username: value })}
-                    style={{ width: "80%", margin: "0 auto" }}
-                    borderRadius={3}
-                    type="text"
-                    size={5}
-                    labelValue="Username"
                     required={true}
                   />
                   <TextInput

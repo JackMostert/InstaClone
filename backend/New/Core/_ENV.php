@@ -19,7 +19,7 @@ $_ENV['passwd'] = '';
 $_ENV['dbname'] = 'ImagePing';
 
 // For checking the request
-$_ENV['routes'] = array('/', '/Feed', '/Profile', '/');
+$_ENV['routes'] = array('/', '/Feed', '/Profile', '/Register');
 $_ENV['methods'] = array('GET', 'POST', 'DELETE', 'UPDATE');
 $_ENV['tables'] = array('Users', 'Comments', 'Posts', 'Likes');
 $_ENV['returnTypes'] = array('Count', 'Data');
@@ -34,4 +34,13 @@ $_ENV['Schema'] = array(
 	'Tages' => $TagSchema,
 	'RequestSingle' => $RequestSingleSchema,
 	'RequestAll' => $RequestAllSchema,
+);
+
+// PerparedSQL
+$_ENV["PerparedSQL"] = array(
+	'POST_Users' => function ($conn, $data) {
+		$prepareSQL = $conn->prepare("INSERT INTO Users (ID, User_password, User_first_name, User_last_name, User_age, User_email, User_username) VALUES (?, ?, ?, ?, ?, ?, ?)");
+		$prepareSQL->bind_param("ssssiss", $data->ID, $data->Password, $data->FirstName, $data->LastName, $data->Age, $data->Email, $data->Username);
+		return $prepareSQL;
+	}
 );

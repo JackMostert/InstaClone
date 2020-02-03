@@ -10,6 +10,7 @@ import Icon from "../Personal-Design-Language/Icon";
 import { Link } from "../Personal-Design-Language/Link/Link";
 import Axios from "axios";
 import CardFooter from "../Personal-Design-Language/CardFooter/Index";
+import Loading from "../Personal-Design-Language/Loading/Index";
 
 export interface IFeedProps {
   history: any;
@@ -18,6 +19,7 @@ export interface IFeedProps {
 
 export interface IFeedState {
   images: Array<any>;
+  dataLoaded?: boolean;
 }
 
 export default class Feed extends React.Component<IFeedProps, IFeedState> {
@@ -41,10 +43,10 @@ export default class Feed extends React.Component<IFeedProps, IFeedState> {
       "http://localhost/InstaClone/backend/New/Core/" + "Core.php",
       formData
     ).then(res => {
-      this.setState({ images: res.data });
+      this.setState({ images: res.data, dataLoaded: true });
     });
 
-    this.state = { images: [] };
+    this.state = { images: [], dataLoaded: false };
   }
 
   public render() {
@@ -80,6 +82,11 @@ export default class Feed extends React.Component<IFeedProps, IFeedState> {
           ]}
           onNavLinkClick={url => url && this.props.history.push(url)}
         >
+          <Loading
+            fadout={this.state.dataLoaded}
+            animationConfig={{ delay: 1.5, animationLength: 1.2 }}
+            type={{ spinner: { size: "50px" } }}
+          />
           <div className="feed-content">
             <Grid col={1} row={0} colGap="20px" rowGap="20px">
               {this.state.images.map(card => (

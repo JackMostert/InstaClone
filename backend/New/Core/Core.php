@@ -4,6 +4,8 @@ require_once(ROOT_PATH . './New/Core/GeneralImports.php');
 
 $Request 							= $_POST;
 
+// $Res->sendJSON($Request, 200, "");
+
 //Validate Request
 $hasValidRoute 				= $Validation->hasKeyWithValidData($Request, 'route', $_ENV['routes']);
 $hasValidMethod 			= $Validation->hasKeyWithValidData($Request, 'method', $_ENV['methods']);
@@ -26,7 +28,7 @@ switch ($Request['method']) {
 	case 'POST':
 		include(ROOT_PATH . './New/Methods/POST.php');
 		$POST = new POST($Validation, $Res);
-		$POST->begin($Request['table'], $Request['type'], $Request['returnType'], (object) json_decode($Request['data']));
+		$POST->route($Request['table'], $Request['returnType'], $Request['schema'], (object) json_decode($Request['data']), $Request['route']);
 		break;
 
 	case 'UPDATE':

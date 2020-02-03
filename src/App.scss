@@ -183,3 +183,16 @@
     box-sizing: border-box;
   }
 }
+
+.Register {
+  .TextInput-root {
+    margin: 0 !important;
+    width: 100% !important;
+  }
+  .Grid-root {
+    margin: 0;
+  }
+  .Header-root {
+    margin-bottom: 40px;
+  }
+}
