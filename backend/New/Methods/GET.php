@@ -2,16 +2,6 @@
 
 class GET extends Database
 {
-	private $Validation;
-	private $Res;
-
-	function __construct($Validation, $Res)
-	{
-		parent::__construct();
-		$this->Validation = $Validation;
-		$this->Res = $Res;
-	}
-
 	private function getTableData($table, $returnType, $schema, $data)
 	{
 		$payload 	= array();
@@ -100,5 +90,37 @@ class GET extends Database
 		}
 
 		return $payload;
+	}
+
+	private function getData($table, $returnType, $schema, $data, $conn)
+	{
+
+		$result = "";
+
+		switch ($schema) {
+			case 'RequestSingle' && $returnType === "Count":
+				$result = call_user_func($_ENV["PerparedSQL"]["GET_Conditional_Count"], $conn, $table, $data->field, $data->toSearch)->execute();
+				break;
+			case 'RequestSingle':
+				$result = call_user_func($_ENV["PerparedSQL"]["GET_Conditional"], $conn, $table, $data->field, $data->toSearch)->execute();
+				break;
+			case 'RequestAll' && $returnType === "Count":
+				$result = call_user_func($_ENV["PerparedSQL"]["GET_All_Count"], $conn, $table)->execute();
+				break;
+			case 'RequestAll':
+				$result = call_user_func($_ENV["PerparedSQL"]["GET_All"], $conn, $table)->execute();
+				break;
+		}
+	}
+
+	public function start($table, $returnType, $schema, $data, $route, $Res, $conn)
+	{
+
+		$this->getData($table, $returnType, $schema, $data, $conn);
+
+		switch ($route) {
+			case '/Feed':
+				break;
+		}
 	}
 }

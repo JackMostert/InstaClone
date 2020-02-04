@@ -12,5 +12,17 @@ include(ROOT_PATH . './New/Core/Validation.php');
 include(ROOT_PATH . './New/Core/Response.php');
 include(ROOT_PATH . './New/Core/Database.php');
 
+include(ROOT_PATH . './New/Methods/CONTROL.php');
+include(ROOT_PATH . './New/Methods/DELETE.php');
+include(ROOT_PATH . './New/Methods/GET.php');
+include(ROOT_PATH . './New/Methods/POST.php');
+include(ROOT_PATH . './New/Methods/UPDATE.php');
+
 $Validation 	= new Validation();
 $Res 					= new Response();
+$DELETE 			= new DELETE();
+$GET 					= new GET();
+$POST 				= new POST();
+$UPDATE 			= new UPDATE();
+
+$CONTROL 			= new CONTROL($Validation, $Res, $GET, $POST, $UPDATE, $DELETE);

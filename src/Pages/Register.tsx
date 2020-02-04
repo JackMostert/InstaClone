@@ -47,6 +47,7 @@ export default class Register extends React.Component<
     const { email, username, password, Age, FirstName, LastName } = this.state;
 
     const formData = new FormData();
+
     formData.append("method", "POST");
     formData.append("table", "Users");
     formData.append("schema", "Users");
@@ -61,7 +62,7 @@ export default class Register extends React.Component<
         Age: Age,
         LastName: LastName,
         FirstName: FirstName,
-        ID: "72389uihj"
+        ID: ""
       })
     );
 
@@ -124,10 +125,10 @@ export default class Register extends React.Component<
             <Card
               shadowSpread={5}
               size="xlarge"
-              style={{ padding: "30px 10px", borderRadius: "5px" }}
+              style={{ padding: "30px 40px", borderRadius: "5px" }}
             >
               <Header hNumber={4} alignment="center">
-                Register
+                <div style={{ marginBottom: 50 }}>Register</div>
               </Header>
               <form
                 onSubmit={event => {
@@ -138,7 +139,7 @@ export default class Register extends React.Component<
                 <Grid row={0} col={0} rowGap="20px">
                   <Grid row={0} col={2} colGap="20px">
                     <TextInput
-                      // onChange={value => this.setState({ email: value })}
+                      onChange={value => this.setState({ FirstName: value })}
                       autoFocus={true}
                       style={{ width: "80%", margin: "0 auto" }}
                       borderRadius={3}
@@ -148,8 +149,7 @@ export default class Register extends React.Component<
                       required={true}
                     />
                     <TextInput
-                      // onChange={value => this.setState({ email: value })}
-                      autoFocus={true}
+                      onChange={value => this.setState({ LastName: value })}
                       style={{ width: "80%", margin: "0 auto" }}
                       borderRadius={3}
                       type="text"
@@ -160,11 +160,10 @@ export default class Register extends React.Component<
                   </Grid>
                   <Grid row={0} col={2} colGap="20px">
                     <TextInput
-                      // onChange={value => this.setState({ email: value })}
-                      autoFocus={true}
+                      onChange={value => this.setState({ Age: value })}
                       style={{ width: "80%", margin: "0 auto" }}
                       borderRadius={3}
-                      type="text"
+                      type="number"
                       size={5}
                       labelValue="Age"
                       required={true}
@@ -181,7 +180,6 @@ export default class Register extends React.Component<
                   </Grid>
                   <TextInput
                     onChange={value => this.setState({ email: value })}
-                    autoFocus={true}
                     style={{ width: "80%", margin: "0 auto" }}
                     borderRadius={3}
                     type="email"

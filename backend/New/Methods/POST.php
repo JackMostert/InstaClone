@@ -1,37 +1,42 @@
 <?php
 
-class POST extends Database
+require ROOT_PATH . '/vendor/autoload.php';
+
+use \Firebase\JWT\JWT;
+
+class POST
 {
-	private $Validation;
-	private $Res;
-
-	function __construct($Validation, $Res)
+	public function start($data, $route, $Res, $conn)
 	{
-		parent::__construct();
-		$this->Validation = $Validation;
-		$this->Res = $Res;
-	}
-
-	public function postDataTable($table, $returnType, $schema, $data, $route)
-	{
-		$data 		= $this->Validation->cleanValidStructure($data, $_ENV['Schema'][$schema]);
-
-		if ($data === false)
-			$this->Res->sendJSON("Please Provide All Required Fields", 400, "Error");
-
-		$this->Connect();
-
 		switch ($route) {
 			case '/Register':
-				call_user_func($_ENV["PerparedSQL"]["POST_Users"], $this->conn, $data)->execute();
+				$this->register($data, $Res, $conn);
+				break;
+			case '/newPost':
+				# code...
+				break;
+			case '/newComment':
+				# code...
+				break;
+			case '/newLike':
+				# code...
 				break;
 		}
-
-		$this->Disconnect();
 	}
 
-	public function route($table, $returnType, $schema, $data, $route)
+	private function register($data, $Res, $conn)
 	{
-		$this->postDataTable($table, $returnType, $schema, $data, $route);
+		$data->ID = sha1($data->Email);
+		$data->Password = password_hash($data->Password, PASSWORD_DEFAULT, ['cost' => 12]);
+
+		call_user_func($_ENV["PerparedSQL"]["POST_Users"], $conn, $data)->execute();
+
+		$payload = new stdClass();
+		$payload->UID = $data->ID;
+		$payload->Expire = time() + 3600;
+
+		$jwt = JWT::encode($payload, $_ENV['key'], 'HS384');
+
+		$Res->sendData($jwt);
 	}
 }

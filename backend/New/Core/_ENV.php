@@ -42,5 +42,25 @@ $_ENV["PerparedSQL"] = array(
 		$prepareSQL = $conn->prepare("INSERT INTO Users (ID, User_password, User_first_name, User_last_name, User_age, User_email, User_username) VALUES (?, ?, ?, ?, ?, ?, ?)");
 		$prepareSQL->bind_param("ssssiss", $data->ID, $data->Password, $data->FirstName, $data->LastName, $data->Age, $data->Email, $data->Username);
 		return $prepareSQL;
+	},
+	'GET_Conditional' => function ($conn, $table, $field, $toSearch) {
+		$prepareSQL = $conn->prepare("SELECT * FROM ? WHERE ? = ?");
+		$prepareSQL->bind_param("sss", $table, $field, $toSearch);
+		return $prepareSQL;
+	},
+	'GET_Conditional_Count' => function ($conn, $table, $field, $toSearch) {
+		$prepareSQL = $conn->prepare("SELECT COUNT(*) FROM ? WHERE ? = ?");
+		$prepareSQL->bind_param("sss", $table, $field, $toSearch);
+		return $prepareSQL;
+	},
+	'GET_All' => function ($conn, $table) {
+		$prepareSQL = $conn->prepare("SELECT * FROM ?");
+		$prepareSQL->bind_param("s", $table);
+		return $prepareSQL;
+	},
+	'GET_All_Count' => function ($conn, $table) {
+		$prepareSQL = $conn->prepare("SELECT COUNT(*) FROM ?");
+		$prepareSQL->bind_param("s", $table);
+		return $prepareSQL;
 	}
 );
