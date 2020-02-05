@@ -34,7 +34,7 @@ class CONTROL extends Database
 		// $this->Res->sendJSON("Provided Invaleid chars", 400, "Error");
 	}
 
-	public function handler($method, $table, $returnType, $schema, $data, $route, $JWT = false)
+	public function handler($method, $table, $returnType, $schema, $data, $route, $JWT = false, $file = false)
 	{
 		$this->structuralValidation($data, $schema);
 		$this->dataSensitization();
@@ -46,7 +46,7 @@ class CONTROL extends Database
 				$this->GET->start($table, $returnType, $schema, $data, $route, $this->Res, $this->conn, $JWT, $this->Validation);
 				break;
 			case 'POST':
-				$this->POST->start($data, $route, $this->Res, $this->conn, $JWT, $this->Validation);
+				$this->POST->start($data, $route, $this->Res, $this->conn, $JWT, $this->Validation, $file);
 				break;
 			case 'UPDATE':
 				$this->UPDATE->start($data, $route, $this->Res, $this->conn, $JWT, $this->Validation);

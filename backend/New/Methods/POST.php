@@ -6,14 +6,14 @@ use \Firebase\JWT\JWT;
 
 class POST
 {
-	public function start($data, $route, $Res, $conn)
+	public function start($data, $route, $Res, $conn, $JWT, $validation, $file)
 	{
 		switch ($route) {
 			case '/Register':
 				$this->register($data, $Res, $conn);
 				break;
 			case '/newPost':
-				$this->newPost($data, $Res, $conn);
+				$this->newPost($data, $Res, $conn, $validation, $JWT, $file);
 				break;
 			case '/newComment':
 				# code...
@@ -63,9 +63,25 @@ class POST
 		$Res->sendData($jwt);
 	}
 
-	private function newPost($data, $Res, $conn)
+	private function newPost($data, $Res, $conn, $validation, $JWT)
 	{
+		$User = $validation->checkUserLogin($JWT, $conn, $Res);
 		$data->ID = $_ENV["UUID_Light"]();
+		$data->User_ID = $User['User_ID'];
+
+		if (isset($_FILES["PostImageURL"]["name"])) {
+			$filePath = "post_images/" . basename($_FILES["PostImageURL"]["name"]);
+			move_uploaded_file(
+				$_FILES["PostImageURL"]["tmp_name"],
+				$filePath
+			);
+		} else {
+			$filePath = '';
+		}
+
+		$data->PostImageURL = $filePath;
 		call_user_func($_ENV["PerparedSQL"]["POST_Post"], $conn, $data);
+
+		$Res->sendDATA($_FILES);
 	}
 }

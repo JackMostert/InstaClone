@@ -100,19 +100,36 @@ export default class Profile extends React.Component<
 
   private postImage = () => {
     const formData = new FormData();
+
+    formData.append("method", "POST");
+    formData.append("table", "Posts");
+    formData.append("schema", "Posts");
+    formData.append("returnType", "Data");
+    formData.append("route", "/newPost");
+
     if (this.state.newImage.image) {
       formData.append(
-        "image",
+        "PostImageURL",
         this.state.newImage.image,
         this.state.newImage.image.name
       );
     }
 
-    formData.append("content", this.state.newImage.content || "");
-    formData.append("user_id", this.props.cookie.get("token"));
+    formData.append("Token", this.props.cookie.get("token"));
+
+    formData.append(
+      "data",
+      JSON.stringify({
+        PostText: this.state.newImage.content || "",
+        User_ID: "",
+        PostTitle: "",
+        ID: "",
+        PostImageURL: ""
+      })
+    );
 
     Axios.post(
-      "http://localhost/InstaClone/backend/" + "upload_file.php",
+      "http://localhost/InstaClone/backend/New/Core/" + "Core.php",
       formData,
       {
         headers: {
@@ -121,7 +138,7 @@ export default class Profile extends React.Component<
       }
     )
       .then(re => {
-        if (re.data.Sstatus) {
+        if (re.data) {
           this.setState({
             imageURL: "",
             newImage: { content: "", image: "", isEditing: false }

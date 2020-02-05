@@ -15,5 +15,6 @@ $isValidRequest             = $hasValidMethod && $hasValidTable && $hasValidRetu
 if ($isValidRequest === false) $Res->sendJSON("Invalid Request", 400, "Error");
 
 $token = key_exists('Token', $Request) ? $Request['Token'] : false;
+$file = key_exists('PostImageURL', $Request) ? $_FILES["image"]["name"] : false;
 
-$CONTROL->handler($Request['method'], $Request['table'], $Request['returnType'], $Request['schema'], (object) json_decode($Request['data']), $Request['route'], $token);
+$CONTROL->handler($Request['method'], $Request['table'], $Request['returnType'], $Request['schema'], (object) json_decode($Request['data']), $Request['route'], $token,);
