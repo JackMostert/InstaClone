@@ -25,6 +25,10 @@ export interface IProfileState {
   isEditing: boolean;
   usernameField: string;
   emailField: string;
+  firstName: string;
+  lastName: string;
+  age: string;
+  joined: string;
   newImage: {
     isEditing?: boolean;
     image?: any;
@@ -42,32 +46,46 @@ export default class Profile extends React.Component<
     super(props);
 
     const formData = new FormData();
-    formData.append("user_id", this.props.cookie.get("token"));
+    formData.append("Token", this.props.cookie.get("token"));
+    formData.append("method", "GET");
+    formData.append("table", "Users");
+    formData.append("schema", "RequestConditional");
+    formData.append("returnType", "Data");
+    formData.append("route", "/Profile");
+
+    formData.append(
+      "data",
+      JSON.stringify({
+        toSearch: "",
+        field: ""
+      })
+    );
 
     Axios.post(
-      "http://localhost/InstaClone/backend/" + "getUserImages.php",
+      "http://localhost/InstaClone/backend/New/Core/" + "Core.php",
       formData
-    ).then(res => {
-      let data: any = [[], [], [], []];
-      let index = 0;
-
-      for (let [key] of Object.entries(res.data)) {
-        if (index === 4) {
-          index = 0;
-        }
-        data[index].push(res.data[key]);
-        index++;
+    ).then((res: any) => {
+      if (res.data.User_Email) {
+        this.setState({
+          usernameField: res.data.User_Username || "",
+          emailField: res.data.User_Email || "",
+          firstName: res.data.User_FirstName || "",
+          lastName: res.data.User_LastName || "",
+          age: res.data.User_Age || "",
+          joined: res.data.User_DateJoined || "",
+          images: [res.data.posts] || []
+        });
       }
-
-      console.log(data);
-
-      this.setState({ images: data });
     });
 
     this.state = {
       isEditing: false,
-      usernameField: "jmgxymp",
-      emailField: "j_mostert@outlook.com",
+      usernameField: "",
+      emailField: "",
+      firstName: "",
+      lastName: "",
+      age: "",
+      joined: "",
       newImage: {
         isEditing: false,
         image: undefined,
@@ -268,14 +286,7 @@ export default class Profile extends React.Component<
                 <div className="left"></div>
               </div>
               <PageGroup>
-                <Card
-                  size="fill"
-                  shadowSpread={2}
-                  className="information-card"
-                  style={{
-                    maxHeight: this.state.isEditing ? "560px" : "500px"
-                  }}
-                >
+                <Card size="fill" shadowSpread={2} className="information-card">
                   <div className="edit"></div>
                   <CardTitle size="">
                     {" "}
@@ -286,6 +297,36 @@ export default class Profile extends React.Component<
                   </CardTitle>
                   <CardContent>
                     <br></br>
+                    <div className="profile-text">
+                      <div className="profile-info">
+                        <Text weight="regular">First Name:</Text>
+                      </div>
+                      {this.state.isEditing ? (
+                        <TextInput
+                          type="text"
+                          size={2}
+                          labelValue="Lebel"
+                          value={this.state.firstName}
+                        />
+                      ) : (
+                        <Text weight="regular">{this.state.firstName}</Text>
+                      )}
+                    </div>
+                    <div className="profile-text">
+                      <div className="profile-info">
+                        <Text weight="regular">Last Name:</Text>
+                      </div>
+                      {this.state.isEditing ? (
+                        <TextInput
+                          type="text"
+                          size={2}
+                          labelValue="Lebel"
+                          value={this.state.lastName}
+                        />
+                      ) : (
+                        <Text weight="regular">{this.state.lastName}</Text>
+                      )}
+                    </div>
                     <div className="profile-text">
                       <div className="profile-info">
                         <Text weight="regular">Username:</Text>
@@ -314,6 +355,36 @@ export default class Profile extends React.Component<
                         />
                       ) : (
                         <Text weight="regular">{this.state.emailField}</Text>
+                      )}
+                    </div>
+                    <div className="profile-text">
+                      <div className="profile-info">
+                        <Text weight="regular">Age:</Text>
+                      </div>
+                      {this.state.isEditing ? (
+                        <TextInput
+                          type="text"
+                          size={2}
+                          labelValue="Lebel"
+                          value={this.state.age}
+                        />
+                      ) : (
+                        <Text weight="regular">{this.state.age}</Text>
+                      )}
+                    </div>
+                    <div className="profile-text">
+                      <div className="profile-info">
+                        <Text weight="regular">Joined:</Text>
+                      </div>
+                      {this.state.isEditing ? (
+                        <TextInput
+                          type="text"
+                          size={2}
+                          labelValue="Lebel"
+                          value={this.state.joined}
+                        />
+                      ) : (
+                        <Text weight="regular">{this.state.joined}</Text>
                       )}
                     </div>
                     {this.state.isEditing && (
@@ -355,11 +426,11 @@ export default class Profile extends React.Component<
                         shadowSpread={3}
                         style={{ borderRadius: "5px" }}
                       >
-                        {card.ImageURL && (
+                        {card.Post_ImageURL && (
                           <CardImage
                             src={
                               "http://localhost/InstaClone/backend/" +
-                              card.ImageURL
+                              card.Post_ImageURL
                             }
                           ></CardImage>
                         )}
@@ -367,23 +438,23 @@ export default class Profile extends React.Component<
                           <Persona
                             size={45}
                             src="https://randomuser.me/api/portraits/men/75.jpg"
-                            text={card.Username}
+                            text={this.state.usernameField}
                           />
                         </CardTitle>
                         <CardContent>
-                          {card.ImageContent} <br></br>
+                          {card.Post_Content} <br></br>
                           <br></br>
                           <br></br>
                           <div className="card-stats">
                             <Icon
                               icon="lar la-comments"
                               fontSize="1.7rem"
-                              text="1234"
+                              text={`${card.commentCount}`}
                             />
                             <Icon
                               icon="lar la-heart"
                               fontSize="1.7rem"
-                              text="1234"
+                              text={`${card.likeCount}`}
                             />
                             <div style={{ textAlign: "right", width: "100%" }}>
                               <Link
@@ -399,257 +470,6 @@ export default class Profile extends React.Component<
                     ))}
                   </div>
                 ))}
-
-                {/* <div> */}
-                {/* <Card
-                    size="fill"
-                    shadowSpread={3}
-                    style={{ borderRadius: "5px" }}
-                  >
-                    <CardImage src="https://picsum.photos/400/300"></CardImage>
-                    <CardTitle size={5}>
-                      <Persona
-                        size={45}
-                        src="https://randomuser.me/api/portraits/men/75.jpg"
-                        text="cezer121"
-                      />
-                      <Link
-                        inlineLine
-                        onClick={() => this.props.history.push("")}
-                      >
-                        Edit
-                      </Link>
-                    </CardTitle>
-                    <CardContent>
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                      Voluptates nemo harum nesciunt magnam, hic minima
-                      accusantium doloremque. Id voluptas aliquid similique
-                      incidunt ipsa necessitatibus. Quo impedit et eligendi ea
-                      aliquam. <br></br>
-                      <br></br>
-                      <br></br>
-                      <div className="card-stats">
-                        <Icon
-                          icon="lar la-comments"
-                          fontSize="1.7rem"
-                          text="1234"
-                        />
-                        <Icon
-                          icon="lar la-heart"
-                          fontSize="1.7rem"
-                          text="1234"
-                        />
-                        <div style={{ textAlign: "right", width: "100%" }}>
-                          <Link
-                            onClick={() => this.props.history.push("/view:1")}
-                          >
-                            VIEW
-                          </Link>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                  <Card
-                    size="fill"
-                    shadowSpread={3}
-                    style={{ borderRadius: "5px" }}
-                  >
-                    <CardImage src="https://picsum.photos/400/300"></CardImage>
-                    <CardTitle size={5}>
-                      <Persona
-                        size={45}
-                        src="https://randomuser.me/api/portraits/men/75.jpg"
-                        text="cezer121"
-                      />
-                      <Link
-                        inlineLine
-                        onClick={() => this.props.history.push("")}
-                      >
-                        Edit
-                      </Link>
-                    </CardTitle>
-                    <CardContent>
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                      Voluptates nemo harum nesciunt magnam, hic minima
-                      accusantium doloremque. Id voluptas aliquid similique
-                      incidunt ipsa necessitatibus. Quo impedit et eligendi ea
-                      aliquam. <br></br>
-                      <br></br>
-                      <br></br>
-                      <div className="card-stats">
-                        <Icon
-                          icon="lar la-comments"
-                          fontSize="1.7rem"
-                          text="1234"
-                        />
-                        <Icon
-                          icon="lar la-heart"
-                          fontSize="1.7rem"
-                          text="1234"
-                        />
-                        <div style={{ textAlign: "right", width: "100%" }}>
-                          <Link
-                            onClick={() => this.props.history.push("/view:1")}
-                          >
-                            VIEW
-                          </Link>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-                <div>
-                  {" "}
-                  <Card
-                    size="fill"
-                    shadowSpread={3}
-                    style={{ borderRadius: "5px" }}
-                  >
-                    <CardImage src="https://picsum.photos/400/300"></CardImage>
-                    <CardTitle size={5}>
-                      <Persona
-                        size={45}
-                        src="https://randomuser.me/api/portraits/men/75.jpg"
-                        text="cezer121"
-                      />
-                      <Link
-                        inlineLine
-                        onClick={() => this.props.history.push("")}
-                      >
-                        Edit
-                      </Link>
-                    </CardTitle>
-                    <CardContent>
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                      Voluptates nemo harum nesciunt magnam, hic minima
-                      accusantium doloremque. Id voluptas aliquid similique
-                      incidunt ipsa necessitatibus. Quo impedit et eligendi ea
-                      aliquam. <br></br>
-                      <br></br>
-                      <br></br>
-                      <div className="card-stats">
-                        <Icon
-                          icon="lar la-comments"
-                          fontSize="1.7rem"
-                          text="1234"
-                        />
-                        <Icon
-                          icon="lar la-heart"
-                          fontSize="1.7rem"
-                          text="1234"
-                        />
-                        <div style={{ textAlign: "right", width: "100%" }}>
-                          <Link
-                            onClick={() => this.props.history.push("/view:1")}
-                          >
-                            VIEW
-                          </Link>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-                <div>
-                  <Card
-                    size="fill"
-                    shadowSpread={3}
-                    style={{ borderRadius: "5px" }}
-                  >
-                    <CardImage src="https://picsum.photos/400/300"></CardImage>
-                    <CardTitle size={5}>
-                      <Persona
-                        size={45}
-                        src="https://randomuser.me/api/portraits/men/75.jpg"
-                        text="cezer121"
-                      />
-                      <Link
-                        inlineLine
-                        onClick={() => this.props.history.push("")}
-                      >
-                        Edit
-                      </Link>
-                    </CardTitle>
-                    <CardContent>
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                      Voluptates nemo harum nesciunt magnam, hic minima
-                      accusantium doloremque. Id voluptas aliquid similique
-                      incidunt ipsa necessitatibus. Quo impedit et eligendi ea
-                      aliquam. <br></br>
-                      <br></br>
-                      <br></br>
-                      <div className="card-stats">
-                        <Icon
-                          icon="lar la-comments"
-                          fontSize="1.7rem"
-                          text="1234"
-                        />
-                        <Icon
-                          icon="lar la-heart"
-                          fontSize="1.7rem"
-                          text="1234"
-                        />
-                        <div style={{ textAlign: "right", width: "100%" }}>
-                          <Link
-                            onClick={() => this.props.history.push("/view:1")}
-                          >
-                            VIEW
-                          </Link>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-                <div>
-                  {" "}
-                  <Card
-                    size="fill"
-                    shadowSpread={3}
-                    style={{ borderRadius: "5px" }}
-                  >
-                    <CardImage src="https://picsum.photos/400/300"></CardImage>
-                    <CardTitle size={5}>
-                      <Persona
-                        size={45}
-                        src="https://randomuser.me/api/portraits/men/75.jpg"
-                        text="cezer121"
-                      />
-                      <Link
-                        inlineLine
-                        onClick={() => this.props.history.push("")}
-                      >
-                        Edit
-                      </Link>
-                    </CardTitle>
-                    <CardContent>
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                      Voluptates nemo harum nesciunt magnam, hic minima
-                      accusantium doloremque. Id voluptas aliquid similique
-                      incidunt ipsa necessitatibus. Quo impedit et eligendi ea
-                      aliquam. <br></br>
-                      <br></br>
-                      <br></br>
-                      <div className="card-stats">
-                        <Icon
-                          icon="lar la-comments"
-                          fontSize="1.7rem"
-                          text="1234"
-                        />
-                        <Icon
-                          icon="lar la-heart"
-                          fontSize="1.7rem"
-                          text="1234"
-                        />
-                        <div style={{ textAlign: "right", width: "100%" }}>
-                          <Link
-                            onClick={() => this.props.history.push("/view:1")}
-                          >
-                            VIEW
-                          </Link>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div> */}
               </Grid>
             </div>
           </Page>

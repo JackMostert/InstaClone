@@ -98,28 +98,31 @@ export default class Feed extends React.Component<IFeedProps, IFeedState> {
                   >
                     {card.URL && (
                       <CardImage
-                        src={"http://localhost/InstaClone/backend/" + card.URL}
+                        src={
+                          "http://localhost/InstaClone/backend/" +
+                          card.PostImageURL
+                        }
                       ></CardImage>
                     )}
                     <CardTitle size={5}>
                       <Persona
                         size={33}
                         src={`https://avatars.dicebear.com/v2/identicon/${card.ID}.svg`}
-                        text={card.User}
+                        text={card.Username}
                       />
                     </CardTitle>
-                    {card.content && <CardContent>{card.content}</CardContent>}
+                    {card.content && <CardContent>{card.PostText}</CardContent>}
                     <CardFooter>
                       <div className="card-stats">
                         <Icon
                           icon="lar la-comments"
                           fontSize="1.7rem"
-                          text={card.Comments || "0"}
+                          text={card.commentCount || "0"}
                         />
                         <Icon
                           icon="lar la-heart"
                           fontSize="1.7rem"
-                          text={card.Likes || "0"}
+                          text={card.likeCount || "0"}
                         />
                         <div style={{ textAlign: "right", width: "100%" }}>
                           <Link

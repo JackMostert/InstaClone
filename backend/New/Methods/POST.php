@@ -13,7 +13,7 @@ class POST
 				$this->register($data, $Res, $conn);
 				break;
 			case '/newPost':
-				# code...
+				$this->newPost($data, $Res, $conn);
 				break;
 			case '/newComment':
 				# code...
@@ -29,7 +29,7 @@ class POST
 		$data->ID = sha1($data->Email);
 		$data->Password = password_hash($data->Password, PASSWORD_DEFAULT, ['cost' => 12]);
 
-		call_user_func($_ENV["PerparedSQL"]["POST_Users"], $conn, $data)->execute();
+		call_user_func($_ENV["PerparedSQL"]["POST_Users"], $conn, $data);
 
 		$payload = new stdClass();
 		$payload->UID = $data->ID;
@@ -38,5 +38,11 @@ class POST
 		$jwt = JWT::encode($payload, $_ENV['key'], 'HS384');
 
 		$Res->sendData($jwt);
+	}
+
+	private function newPost($data, $Res, $conn)
+	{
+		$data->ID = $_ENV["UUID_Light"]();
+		call_user_func($_ENV["PerparedSQL"]["POST_Post"], $conn, $data);
 	}
 }

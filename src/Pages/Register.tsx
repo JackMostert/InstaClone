@@ -8,6 +8,7 @@ import PageGroup from "../Personal-Design-Language/PageGroup/Index";
 import CallToAction from "../Personal-Design-Language/CallToAction/Index";
 import Axios from "axios";
 import Cookies from "universal-cookie";
+import { isString } from "util";
 const cookies: any = new Cookies();
 
 export interface IRegisterProps {
@@ -71,14 +72,13 @@ export default class Register extends React.Component<
       formData
     )
       .then(re => {
-        // if (re.data.Sstatus) {
-        //   let d = new Date();
-        //   d.setTime(d.getTime() + 1 * 60 * 1000);
-        //   this.props.cookie.set("token", re.data.message, { path: "/" });
-        //   this.props.history.push("/profile");
-        // } else {
-        //   this.setState({ error: re.data.message });
-        // }
+        console.log(re);
+        if (isString(re.data)) {
+          let expire = new Date();
+          expire.setTime(expire.getTime() + 1 * 60 * 1000);
+          this.props.cookie.set("token", re.data, { path: "/" });
+          this.props.history.push("/profile");
+        }
       })
       .catch(err => {
         console.log(err);

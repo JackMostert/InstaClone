@@ -1,5 +1,9 @@
 <?php
 
+require ROOT_PATH . '/vendor/autoload.php';
+
+use \Firebase\JWT\JWT;
+
 class Validation
 {
 	/*
@@ -70,5 +74,21 @@ class Validation
 		}
 
 		return $validData;
+	}
+
+	// Checks the user is logged in
+	// Returns User Data or sends response
+	public function checkUserLogin($JWT, $conn, $Res)
+	{
+		if ($JWT === false) return $Res->sendJSON("You must be logged in", 401, "Error");;
+
+		$JWTDecoded = JWT::decode($JWT, $_ENV['key'], array('HS384'));
+		if ($JWTDecoded === false) return $Res->sendJSON("You must be logged in", 401, "Error");;
+
+		$result = call_user_func($_ENV["PerparedSQL"]["GET_Conditional"], $conn, "Users", "User_ID", $JWTDecoded->UID);
+		$User = $result->fetch_assoc();
+		if (!$User['User_ID']) return $Res->sendJSON("You must be logged in", 401, "Error");;
+
+		return $User;
 	}
 }

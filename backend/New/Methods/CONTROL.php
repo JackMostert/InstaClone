@@ -29,9 +29,12 @@ class CONTROL extends Database
 
 	private function dataSensitization()
 	{
+		// $data = $this->Validation->cleanValidStructure($data, $_ENV['Schema'][$schema]);
+		// if ($data === false)
+		// $this->Res->sendJSON("Provided Invaleid chars", 400, "Error");
 	}
 
-	public function handler($method, $table, $returnType, $schema, $data, $route)
+	public function handler($method, $table, $returnType, $schema, $data, $route, $JWT = false)
 	{
 		$this->structuralValidation($data, $schema);
 		$this->dataSensitization();
@@ -40,16 +43,16 @@ class CONTROL extends Database
 
 		switch ($method) {
 			case 'GET':
-				$this->GET->start($table, $returnType, $schema, $data, $route, $this->Res, $this->conn);
+				$this->GET->start($table, $returnType, $schema, $data, $route, $this->Res, $this->conn, $JWT, $this->Validation);
 				break;
 			case 'POST':
-				$this->POST->start($data, $route, $this->Res, $this->conn);
+				$this->POST->start($data, $route, $this->Res, $this->conn, $JWT, $this->Validation);
 				break;
 			case 'UPDATE':
-				$this->UPDATE->start($data, $route, $this->Res, $this->conn);
+				$this->UPDATE->start($data, $route, $this->Res, $this->conn, $JWT, $this->Validation);
 				break;
 			case 'DELETE':
-				$this->DELETE->start($data, $route, $this->Res, $this->conn);
+				$this->DELETE->start($data, $route, $this->Res, $this->conn, $JWT, $this->Validation);
 				break;
 		}
 

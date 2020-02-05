@@ -10,7 +10,6 @@ include "./class/POST.php";
 include "./class/res.php";
 
 $res = new Res();
-// $_POST = json_decode(file_get_contents("php://input"), true);
 
 if ($_POST) {
 

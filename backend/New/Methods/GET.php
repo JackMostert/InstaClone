@@ -2,125 +2,92 @@
 
 class GET extends Database
 {
-	private function getTableData($table, $returnType, $schema, $data)
+	private function getData($table, $returnType, $schema, $data, $conn)
 	{
-		$payload 	= array();
-		$data 		= $this->Validation->cleanValidStructure($data, $_ENV['Schema'][$schema]);
-
-		if ($data === false)
-			$this->Res->sendJSON("Please Provide All Required Fields", 400, "Error");
-
-		$this->Connect();
 
 		switch ($schema) {
-			case 'RequestSingle':
-				$Field = $data->Field;
-				$Search = $data->ID;
-
-				if ($returnType === 'Count') {
-					$prepareSQL = $this->conn->prepare("SELECT COUNT(*) as total FROM `$table` WHERE $Field = '$Search'");
-				} else {
-					$prepareSQL = $this->conn->prepare("SELECT * FROM `$table` WHERE $Field = '$Search'");
-				}
-
+			case 'RequestConditional' && $returnType === "Count":
+				$result = call_user_func($_ENV["PerparedSQL"]["GET_Conditional_Count"], $conn, $table, $data->field, $data->toSearch);
+				break;
+			case 'RequestConditional':
+				$result = call_user_func($_ENV["PerparedSQL"]["GET_Conditional"], $conn, $table, $data->field, $data->toSearch);
+				break;
+			case 'RequestAll' && $returnType === "Count":
+				$result = call_user_func($_ENV["PerparedSQL"]["GET_All_Count"], $conn, $table);
 				break;
 			case 'RequestAll':
-
-				if ($returnType === 'Count') {
-					$prepareSQL = $this->conn->prepare("SELECT COUNT(*) as total FROM `$table`");
-				} else {
-					$prepareSQL = $this->conn->prepare("SELECT * FROM `$table`");
-				}
-
+				$result = call_user_func($_ENV["PerparedSQL"]["GET_All"], $conn, $table);
 				break;
 		}
 
-		$prepareSQL->execute();
-		$result = $prepareSQL->get_result();
-
-		while ($rowData = $result->fetch_assoc()) {
-			array_push($payload, $rowData);
-		}
-
-		$this->Disconnect();
-
-		return $payload;
+		return $result;
 	}
 
-	public function route($table, $returnType, $schema, $data, $route)
+	public function start($table, $returnType, $schema, $data, $route, $Res, $conn, $JWT, $Validation)
 	{
 		$payload = array();
 
 		switch ($route) {
 			case '/Feed':
-				//Get all post
-				$payload = $this->getTableData($table, $returnType, $schema, $data);
-
-				//Get like Count assoc with Posts
-				foreach ($payload as $key => $value) {
+				$data = $this->getData($table, $returnType, $schema, $data, $conn);
+				while ($rowData = $data->fetch_assoc()) {
 					$internalData = new stdClass();
-					$internalData->ID = $value['ID'];
-					$internalData->Field = "image_id";
-					$payload[$key]['Likes'] = $this->getTableData('Likes', 'Count', "RequestSingle", $internalData)[0]["total"];
+
+					$internalData->toSearch = $rowData['Post_ID'];
+					$internalData->field = "Like_PostID";
+
+					$likeCount 		= $this->getData('Likes', 'Count', 'RequestConditional', $internalData, $conn)->fetch_assoc()['total'];
+
+					$internalData->field = "Comment_PostID";
+					$commentCount = $this->getData('Comments', 'Count', 'RequestConditional', $internalData, $conn)->fetch_assoc()['total'];
+
+					$internalData->toSearch = $rowData['Post_UserID'];
+					$internalData->field = "User_ID";
+					$UserInfo 		= $this->getData('Users', 'Data', 'RequestConditional', $internalData, $conn)->fetch_assoc();
+
+					$rowData['likeCount'] = $likeCount;
+					$rowData['commentCount'] = $commentCount;
+					$rowData["Username"] = $UserInfo['User_Username'] ? $UserInfo['User_Username'] : "Unknown";
+
+					array_push($payload, $rowData);
+				}
+				break;
+
+			case '/Profile':
+				$posts = [];
+				$internalData = new stdClass();
+
+				$User = $Validation->checkUserLogin($JWT, $conn, $Res);
+				$User['posts'] = [];
+
+				$internalData->toSearch = $User['User_ID'];
+				$internalData->field = "Post_UserID";
+
+				$post = $this->getData("Posts", "Data", "RequestConditional", $internalData, $conn);
+
+
+				while ($loop = $post->fetch_assoc()) {
+					$internalData->toSearch = $loop['Post_ID'];
+					$internalData->field = "Like_PostID";
+
+					$likeCount 		= $this->getData('Likes', 'Count', 'RequestConditional', $internalData, $conn)->fetch_assoc()['total'];
+
+					$internalData->field = "Comment_PostID";
+					$commentCount = $this->getData('Comments', 'Count', 'RequestConditional', $internalData, $conn)->fetch_assoc()['total'];
+
+					$loop["commentCount"] = $commentCount;
+					$loop["likeCount"] = $likeCount;
+
+					unset($loop['Post_UserID']);
+					array_push($User['posts'], $loop);
 				}
 
-				//Get Comment Count assoc with Posts
-				foreach ($payload as $key => $value) {
-					$internalData = new stdClass();
-					$internalData->ID = $value['ID'];
-					$internalData->Field = "image_id";
-					$payload[$key]['Comments'] = $this->getTableData('Comments', 'Count', "RequestSingle", $internalData)[0]["total"];
-				}
-
-				//Get User data for post information
-				foreach ($payload as $key => $value) {
-					$internalData = new stdClass();
-					$internalData->ID = $value['user_id'];
-					$internalData->Field = "ID";
-					$tempHolder = $this->getTableData('Users', 'Data', "RequestSingle", $internalData);
-					if ($tempHolder) {
-						$payload[$key]['User'] = $tempHolder[0]["User_username"];
-					} else {
-						$payload[$key]['User'] = $tempHolder;
-					}
-					unset($payload[$key]['user_id']);
-				}
-
+				unset($User['User_ID']);
+				unset($User['User_Password']);
+				$payload = $User;
 				break;
 		}
 
-		return $payload;
-	}
-
-	private function getData($table, $returnType, $schema, $data, $conn)
-	{
-
-		$result = "";
-
-		switch ($schema) {
-			case 'RequestSingle' && $returnType === "Count":
-				$result = call_user_func($_ENV["PerparedSQL"]["GET_Conditional_Count"], $conn, $table, $data->field, $data->toSearch)->execute();
-				break;
-			case 'RequestSingle':
-				$result = call_user_func($_ENV["PerparedSQL"]["GET_Conditional"], $conn, $table, $data->field, $data->toSearch)->execute();
-				break;
-			case 'RequestAll' && $returnType === "Count":
-				$result = call_user_func($_ENV["PerparedSQL"]["GET_All_Count"], $conn, $table)->execute();
-				break;
-			case 'RequestAll':
-				$result = call_user_func($_ENV["PerparedSQL"]["GET_All"], $conn, $table)->execute();
-				break;
-		}
-	}
-
-	public function start($table, $returnType, $schema, $data, $route, $Res, $conn)
-	{
-
-		$this->getData($table, $returnType, $schema, $data, $conn);
-
-		switch ($route) {
-			case '/Feed':
-				break;
-		}
+		$Res->sendData($payload);
 	}
 }

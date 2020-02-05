@@ -16,14 +16,14 @@ cf 08 1e c7 c4 29 97 1a a4 1d 35 13 08 13 56 e9";
 $_ENV['host'] = 'localhost';
 $_ENV['username'] = 'root';
 $_ENV['passwd'] = '';
-$_ENV['dbname'] = 'ImagePing';
+$_ENV['dbname'] = 'imageping';
 
 // For checking the request
-$_ENV['routes'] = array('/', '/Feed', '/Profile', '/Register');
+$_ENV['routes'] = array('/newPost', '/Feed', '/Profile', '/Register');
 $_ENV['methods'] = array('GET', 'POST', 'DELETE', 'UPDATE');
 $_ENV['tables'] = array('Users', 'Comments', 'Posts', 'Likes');
 $_ENV['returnTypes'] = array('Count', 'Data');
-$_ENV['schemas'] = array("Users", "Comments", "Likes", "Posts", "Tages", "RequestAll", "RequestSingle");
+$_ENV['schemas'] = array("Users", "Comments", "Likes", "Posts", "Tages", "RequestAll", "RequestConditional");
 
 // Valid Schemas
 $_ENV['Schema'] = array(
@@ -32,35 +32,48 @@ $_ENV['Schema'] = array(
 	'Likes' => $LikeSchema,
 	'Posts' => $PostSchema,
 	'Tages' => $TagSchema,
-	'RequestSingle' => $RequestSingleSchema,
+	'RequestConditional' => $RequestConditionalSchema,
 	'RequestAll' => $RequestAllSchema,
 );
 
 // PerparedSQL
 $_ENV["PerparedSQL"] = array(
 	'POST_Users' => function ($conn, $data) {
-		$prepareSQL = $conn->prepare("INSERT INTO Users (ID, User_password, User_first_name, User_last_name, User_age, User_email, User_username) VALUES (?, ?, ?, ?, ?, ?, ?)");
+		$prepareSQL = $conn->prepare("INSERT INTO `Users` (`User_ID`, `User_Password`, `User_FirstName`, `User_LastName`, `User_Age`, `User_Email`, `User_Username`) VALUES (?, ?, ?, ?, ?, ?, ?)");
 		$prepareSQL->bind_param("ssssiss", $data->ID, $data->Password, $data->FirstName, $data->LastName, $data->Age, $data->Email, $data->Username);
-		return $prepareSQL;
+		$prepareSQL->execute();
+	},
+	'POST_Post' => function ($conn, $data) {
+		$prepareSQL = $conn->prepare("INSERT INTO Posts (Post_ID, Post_UserID, Post_Content, Post_Title, Post_ImageURL) VALUES (?, ?, ?, ?, ?)");
+		$prepareSQL->bind_param("sssss", $data->ID, $data->User_ID, $data->PostText, $data->PostTitle, $data->PostImageURL);
+		$prepareSQL->execute();
 	},
 	'GET_Conditional' => function ($conn, $table, $field, $toSearch) {
-		$prepareSQL = $conn->prepare("SELECT * FROM ? WHERE ? = ?");
-		$prepareSQL->bind_param("sss", $table, $field, $toSearch);
-		return $prepareSQL;
+		$prepareSQL = $conn->prepare("SELECT * FROM `$table` WHERE $field = '$toSearch'");
+		$prepareSQL->execute();
+		return $prepareSQL->get_result();
 	},
 	'GET_Conditional_Count' => function ($conn, $table, $field, $toSearch) {
-		$prepareSQL = $conn->prepare("SELECT COUNT(*) FROM ? WHERE ? = ?");
-		$prepareSQL->bind_param("sss", $table, $field, $toSearch);
-		return $prepareSQL;
+		$prepareSQL =  $conn->prepare("SELECT COUNT(*) as total FROM `$table` WHERE $field = '$toSearch'");
+		$prepareSQL->execute();
+		return $prepareSQL->get_result();
 	},
 	'GET_All' => function ($conn, $table) {
-		$prepareSQL = $conn->prepare("SELECT * FROM ?");
-		$prepareSQL->bind_param("s", $table);
-		return $prepareSQL;
+		$prepareSQL =  $conn->prepare("SELECT * FROM `$table`");
+		$prepareSQL->execute();
+		return $prepareSQL->get_result();
 	},
 	'GET_All_Count' => function ($conn, $table) {
-		$prepareSQL = $conn->prepare("SELECT COUNT(*) FROM ?");
-		$prepareSQL->bind_param("s", $table);
-		return $prepareSQL;
+		$prepareSQL =  $conn->prepare("SELECT COUNT(*) as total FROM `$table`");
+		$prepareSQL->execute();
+		return $prepareSQL->get_result();
 	}
 );
+
+$_ENV["UUID_Light"] = function ($length = 200) {
+	return md5(substr(str_shuffle(str_repeat($x = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil($length / strlen($x)))), 1, $length));
+};
+
+$_ENV["UUID_Heavy"] = function ($length = 32) {
+	return bin2hex(random_bytes($length));
+};
