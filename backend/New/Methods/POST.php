@@ -21,6 +21,29 @@ class POST
 			case '/newLike':
 				# code...
 				break;
+			case '/Login':
+				$this->login($data, $Res, $conn);
+				break;
+		}
+	}
+
+	private function login($data, $Res, $conn)
+	{
+		$ID = sha1($data->field); //field is email
+
+		$User = call_user_func($_ENV["PerparedSQL"]["GET_Conditional"], $conn, 'Users', 'User_ID', $ID)->fetch_assoc();
+		if (!$User) {
+			$Res->sendJSON("Canno't find User", 404, "Error");
+		} else if (!password_verify("$data->toSearch", $User['User_Password'])) {
+			$Res->sendJSON("Username or password is incorrect", 401, "Error");
+		} else {
+			$payload = new stdClass();
+			$payload->UID = $User['User_ID'];
+			$payload->Expire = time() + 3600;
+
+			$jwt = JWT::encode($payload, $_ENV['key'], 'HS384');
+
+			$Res->sendData($jwt);
 		}
 	}
 

@@ -30,23 +30,30 @@ export default class Login extends React.Component<ILoginProps, ILoginState> {
     const { email, password } = this.state;
     const formData = new FormData();
 
-    formData.append("email", email || "");
-    formData.append("password", password || "");
-
-    Axios.post("http://localhost/InstaClone/backend/" + "login.php", formData)
-      .then(re => {
-        if (re.data.Sstatus) {
-          let d = new Date();
-          d.setTime(d.getTime() + 1 * 60 * 1000);
-          this.props.cookie.set("token", re.data.message, { path: "/" });
-          this.props.history.push("/profile");
-        } else {
-          this.setState({ error: re.data.message });
-        }
+    formData.append("method", "POST");
+    formData.append("table", "Users");
+    formData.append("schema", "RequestConditional");
+    formData.append("returnType", "Data");
+    formData.append("route", "/Login");
+    formData.append(
+      "data",
+      JSON.stringify({
+        field: email,
+        toSearch: password
       })
-      .catch(err => {
-        console.log(err);
-      });
+    );
+
+    Axios.post(
+      "http://localhost/InstaClone/backend/New/Core/" + "Core.php",
+      formData
+    ).then(res => {
+      if (res.data) {
+        let d = new Date();
+        d.setTime(d.getTime() + 1 * 60 * 1000);
+        this.props.cookie.set("token", res.data, { path: "/" });
+        this.props.history.push("/profile");
+      }
+    });
   };
 
   public render() {

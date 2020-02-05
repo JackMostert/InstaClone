@@ -19,7 +19,7 @@ $_ENV['passwd'] = '';
 $_ENV['dbname'] = 'imageping';
 
 // For checking the request
-$_ENV['routes'] = array('/newPost', '/Feed', '/Profile', '/Register');
+$_ENV['routes'] = array('/newPost', '/Feed', '/Profile', '/Register', '/Login');
 $_ENV['methods'] = array('GET', 'POST', 'DELETE', 'UPDATE');
 $_ENV['tables'] = array('Users', 'Comments', 'Posts', 'Likes');
 $_ENV['returnTypes'] = array('Count', 'Data');

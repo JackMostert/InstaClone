@@ -84,7 +84,7 @@ export default class Feed extends React.Component<IFeedProps, IFeedState> {
         >
           <Loading
             fadout={this.state.dataLoaded}
-            animationConfig={{ delay: 1.5, animationLength: 1.2 }}
+            animationConfig={{ delay: 1, animationLength: 1.2 }}
             type={{ spinner: { size: "50px" } }}
           />
           <div className="feed-content">
@@ -100,18 +100,20 @@ export default class Feed extends React.Component<IFeedProps, IFeedState> {
                       <CardImage
                         src={
                           "http://localhost/InstaClone/backend/" +
-                          card.PostImageURL
+                          card.Post_ImageURL
                         }
                       ></CardImage>
                     )}
                     <CardTitle size={5}>
                       <Persona
                         size={33}
-                        src={`https://avatars.dicebear.com/v2/identicon/${card.ID}.svg`}
+                        src={`https://avatars.dicebear.com/v2/identicon/${card.Post_UserID}.svg`}
                         text={card.Username}
                       />
                     </CardTitle>
-                    {card.content && <CardContent>{card.PostText}</CardContent>}
+                    {card.content && (
+                      <CardContent>{card.Post_Content}</CardContent>
+                    )}
                     <CardFooter>
                       <div className="card-stats">
                         <Icon
@@ -128,7 +130,7 @@ export default class Feed extends React.Component<IFeedProps, IFeedState> {
                           <Link
                             inlineLine
                             onClick={() =>
-                              this.props.history.push(`/view${card.ID}`)
+                              this.props.history.push(`/view${card.Post_ID}`)
                             }
                           >
                             VIEW

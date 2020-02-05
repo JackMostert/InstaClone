@@ -14,4 +14,6 @@ $isValidRequest             = $hasValidMethod && $hasValidTable && $hasValidRetu
 
 if ($isValidRequest === false) $Res->sendJSON("Invalid Request", 400, "Error");
 
-$CONTROL->handler($Request['method'], $Request['table'], $Request['returnType'], $Request['schema'], (object) json_decode($Request['data']), $Request['route'], $Request['Token']);
+$token = key_exists('Token', $Request) ? $Request['Token'] : false;
+
+$CONTROL->handler($Request['method'], $Request['table'], $Request['returnType'], $Request['schema'], (object) json_decode($Request['data']), $Request['route'], $token);
