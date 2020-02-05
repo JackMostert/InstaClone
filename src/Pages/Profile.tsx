@@ -62,7 +62,7 @@ export default class Profile extends React.Component<
     );
 
     Axios.post(
-      "http://localhost/InstaClone/backend/New/Core/" + "Core.php",
+      "http://localhost/InstaClone/backend/Core/" + "Core.php",
       formData
     ).then((res: any) => {
       if (res.data.User_Email) {
@@ -105,7 +105,7 @@ export default class Profile extends React.Component<
     formData.append("table", "Posts");
     formData.append("schema", "Posts");
     formData.append("returnType", "Data");
-    formData.append("route", "/newPost");
+    formData.append("route", "Post");
 
     if (this.state.newImage.image) {
       formData.append(
@@ -129,7 +129,7 @@ export default class Profile extends React.Component<
     );
 
     Axios.post(
-      "http://localhost/InstaClone/backend/New/Core/" + "Core.php",
+      "http://localhost/InstaClone/backend/Core/" + "Core.php",
       formData,
       {
         headers: {

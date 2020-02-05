@@ -40,7 +40,7 @@ export default class Feed extends React.Component<IFeedProps, IFeedState> {
     );
 
     Axios.post(
-      "http://localhost/InstaClone/backend/New/Core/" + "Core.php",
+      "http://localhost/InstaClone/backend/Core/" + "Core.php",
       formData
     ).then(res => {
       this.setState({ images: res.data, dataLoaded: true });

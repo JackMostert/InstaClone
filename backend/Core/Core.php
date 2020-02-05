@@ -1,6 +1,6 @@
 <?php
 include "../InitalLoad.php";
-require_once(ROOT_PATH . './New/Core/GeneralImports.php');
+require_once('./GeneralImports.php');
 
 $Request                             = $_POST;
 

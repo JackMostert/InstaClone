@@ -44,7 +44,7 @@ export default class Login extends React.Component<ILoginProps, ILoginState> {
     );
 
     Axios.post(
-      "http://localhost/InstaClone/backend/New/Core/" + "Core.php",
+      "http://localhost/InstaClone/backend/Core/" + "Core.php",
       formData
     ).then(res => {
       if (res.data) {
