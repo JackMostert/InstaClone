@@ -12,6 +12,7 @@ import Header from "../Personal-Design-Language/Header/Index";
 import TextInput from "../Personal-Design-Language/TextInput/Index";
 import Axios from "axios";
 import CallToAction from "../Personal-Design-Language/CallToAction/Index";
+import CardFooter from "../Personal-Design-Language/CardFooter/Index";
 
 export interface IViewProps {
   history: any;
@@ -30,13 +31,30 @@ export default class View extends React.Component<IViewProps, IViewState> {
     super(props);
 
     const formData = new FormData();
-    formData.append("ID", this.props.match.params.id);
+
+    formData.append("method", "GET");
+    formData.append("table", "Posts");
+    formData.append("schema", "RequestConditional");
+    formData.append("returnType", "Data");
+    formData.append("route", "/Feed");
+    formData.append(
+      "data",
+      JSON.stringify({
+        field: "Post_ID",
+        toSearch: this.props.match.params.id
+      })
+    );
 
     Axios.post(
-      "http://localhost/InstaClone/backend/" + "getImage.php",
+      "http://localhost/InstaClone/backend/Core/" + "Core.php",
       formData
     ).then(res => {
-      this.setState({ data: res.data });
+      if (res.data[0]) {
+        this.setState({
+          data: res.data[0]
+        });
+        console.log(this.state.data);
+      }
     });
 
     this.state = {
@@ -78,12 +96,15 @@ export default class View extends React.Component<IViewProps, IViewState> {
 
   public render() {
     return (
-      <div>
+      <div className="View">
         <Page
           width="100%"
           isRoot
           pageColor="rgb(245, 245, 245)"
           pageAlignment="center"
+          navigationOptions={{
+            style: "fixed"
+          }}
           navLinksNear={[{ displayName: "Register", isHeader: true }]}
           navLinksFar={[
             { displayName: "Home", url: "/", iconName: "la la-home" },
@@ -110,65 +131,59 @@ export default class View extends React.Component<IViewProps, IViewState> {
             style={{
               width: " 90%",
               maxWidth: "1000px",
-              margin: "0 auto"
+              margin: "60px auto 20px auto"
             }}
           >
             <PageGroup>
               <Card
                 size="fill"
                 shadowSpread={3}
-                style={{
-                  borderRadius: "5px",
-                  marginTop: "3%"
-                }}
+                style={{ borderRadius: "5px" }}
               >
-                {!!this.state.data.ImageURL && (
+                {this.state.data.Post_ImageURL && (
                   <CardImage
                     src={
                       "http://localhost/InstaClone/backend/" +
-                      this.state.data.ImageURL
+                      this.state.data.Post_ImageURL
                     }
                   ></CardImage>
                 )}
                 <CardTitle size={5}>
                   <Persona
-                    size={45}
-                    src="https://randomuser.me/api/portraits/men/75.jpg"
+                    size={33}
+                    src={`https://avatars.dicebear.com/v2/identicon/${this.state.data.Username}.svg`}
                     text={this.state.data.Username}
                   />
                 </CardTitle>
-                <CardContent>
-                  {this.state.data.ImageContent}
-                  <br></br>
-                  <br></br>
-                  <br></br>
+                {this.state.data.Post_Content && (
+                  <CardContent>{this.state.data.Post_Content}</CardContent>
+                )}
+                <CardFooter>
                   <div className="card-stats">
                     <Icon
                       icon="lar la-comments"
                       fontSize="1.7rem"
-                      text={this.state.data.CommentCount}
+                      text={this.state.data.commentCount || "0"}
                     />
                     <Icon
                       icon="lar la-heart"
                       fontSize="1.7rem"
-                      text={this.state.data.LikeCount}
+                      text={this.state.data.likeCount || "0"}
                     />
-                    <div
-                      style={{ textAlign: "right", width: "100%", margin: "0" }}
-                    >
+                    <div style={{ textAlign: "right", width: "100%" }}>
                       <Link
-                        inlineLine={this.state.hasLikedImage}
-                        onClick={() => {
-                          this.setState({
-                            hasLikedImage: !this.state.hasLikedImage
-                          });
-                          this.postLike();
-                        }}
-                        iconProps={{ icon: "la la-heart", fontSize: "2rem" }}
-                      ></Link>
+                        inlineLine
+                        onClick={() =>
+                          this.props.history.push(
+                            `/view${this.state.data.Post_ID}`
+                          )
+                        }
+                      >
+                        VIEW
+                      </Link>
                     </div>
                   </div>
-                </CardContent>
+                </CardFooter>
               </Card>
             </PageGroup>
             <PageGroup>
@@ -198,7 +213,7 @@ export default class View extends React.Component<IViewProps, IViewState> {
                   </CallToAction>
                 </div>
               </div>
-              {this.state.data.comments.map((el: any) => (
+              {/* {this.state.data.comments.map((el: any) => (
                 <Card
                   size="fill"
                   shadowSpread={3}
@@ -217,7 +232,7 @@ export default class View extends React.Component<IViewProps, IViewState> {
                   </CardTitle>
                   <CardContent>{el.Comment}</CardContent>
                 </Card>
-              ))}
+              ))} */}
             </PageGroup>
           </div>
         </Page>

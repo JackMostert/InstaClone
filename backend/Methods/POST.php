@@ -75,7 +75,7 @@ class POST
 			$Res->sendJSON("", 401, "");
 		}
 
-		print_r($_ENV["UUID_Light"]);
+		print_r($_ENV["UUID_Light"]());
 
 		$filePath = "post_images/" .  basename($_FILES["PostImageURL"]['name']);
 		move_uploaded_file(
