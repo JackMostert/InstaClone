@@ -96,7 +96,7 @@ export default class Feed extends React.Component<IFeedProps, IFeedState> {
                     shadowSpread={3}
                     style={{ borderRadius: "5px" }}
                   >
-                    {card.URL && (
+                    {card.Post_ImageURL && (
                       <CardImage
                         src={
                           "http://localhost/InstaClone/backend/" +
@@ -107,11 +107,11 @@ export default class Feed extends React.Component<IFeedProps, IFeedState> {
                     <CardTitle size={5}>
                       <Persona
                         size={33}
-                        src={`https://avatars.dicebear.com/v2/identicon/${card.Post_UserID}.svg`}
+                        src={`https://avatars.dicebear.com/v2/identicon/${card.Username}.svg`}
                         text={card.Username}
                       />
                     </CardTitle>
-                    {card.content && (
+                    {card.Post_Content && (
                       <CardContent>{card.Post_Content}</CardContent>
                     )}
                     <CardFooter>

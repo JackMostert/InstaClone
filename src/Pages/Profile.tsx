@@ -14,6 +14,7 @@ import { Text } from "../Personal-Design-Language/Text/Text";
 import CallToAction from "../Personal-Design-Language/CallToAction/Index";
 import { Grid } from "../Personal-Design-Language/Grid/Grid";
 import Axios from "axios";
+import CardFooter from "../Personal-Design-Language/CardFooter/Index";
 
 export interface IProfileProps {
   history: any;
@@ -65,6 +66,15 @@ export default class Profile extends React.Component<
       "http://localhost/InstaClone/backend/Core/" + "Core.php",
       formData
     ).then((res: any) => {
+      let img: any = [[], [], [], []];
+      let counter = 0;
+      for (let index = 0; index < res.data.posts.length; index++) {
+        if (counter === 4) counter = 0;
+        const element = res.data.posts[index];
+        img[counter].push(element);
+        counter++;
+      }
+
       if (res.data.User_Email) {
         this.setState({
           usernameField: res.data.User_Username || "",
@@ -73,7 +83,7 @@ export default class Profile extends React.Component<
           lastName: res.data.User_LastName || "",
           age: res.data.User_Age || "",
           joined: res.data.User_DateJoined || "",
-          images: [res.data.posts] || []
+          images: img
         });
       }
     });
@@ -105,7 +115,7 @@ export default class Profile extends React.Component<
     formData.append("table", "Posts");
     formData.append("schema", "Posts");
     formData.append("returnType", "Data");
-    formData.append("route", "Post");
+    formData.append("route", "/newPost");
 
     if (this.state.newImage.image) {
       formData.append(
@@ -140,7 +150,7 @@ export default class Profile extends React.Component<
       .then(re => {
         if (re.data) {
           this.setState({
-            imageURL: "",
+            imageURL: "https://via.placeholder.com/600x400",
             newImage: { content: "", image: "", isEditing: false }
           });
         }
@@ -266,6 +276,9 @@ export default class Profile extends React.Component<
             isRoot
             pageColor="rgb(245, 245, 245)"
             pageAlignment="center"
+            navigationOptions={{
+              style: "fixed"
+            }}
             navLinksNear={[{ displayName: "Register", isHeader: true }]}
             navLinksFar={[
               { displayName: "Home", url: "/", iconName: "la la-home" },
@@ -309,7 +322,7 @@ export default class Profile extends React.Component<
                     {" "}
                     <Persona
                       size={240}
-                      src="https://randomuser.me/api/portraits/men/75.jpg"
+                      src={`https://avatars.dicebear.com/v2/identicon/${this.state.usernameField}.svg`}
                     />
                   </CardTitle>
                   <CardContent>
@@ -436,7 +449,7 @@ export default class Profile extends React.Component<
               </div>
               <Grid row={0} col={4} colGap="20px" rowGap="20px">
                 {this.state.images.map((el, index) => (
-                  <div>
+                  <div id="bhfghiolki87377y8r2h98r72h89r29">
                     {el.map(card => (
                       <Card
                         size="fill"
@@ -454,35 +467,46 @@ export default class Profile extends React.Component<
                         <CardTitle size={5}>
                           <Persona
                             size={45}
-                            src="https://randomuser.me/api/portraits/men/75.jpg"
+                            src={`https://avatars.dicebear.com/v2/identicon/${this.state.usernameField}.svg`}
                             text={this.state.usernameField}
                           />
+                          <Link
+                            onClick={() =>
+                              this.props.history.push(`/view${card.Post_ID}`)
+                            }
+                          >
+                            Edit
+                          </Link>
                         </CardTitle>
-                        <CardContent>
-                          {card.Post_Content} <br></br>
-                          <br></br>
-                          <br></br>
+                        {card.Post_Content && (
+                          <CardContent>{card.Post_Content}</CardContent>
+                        )}
+                        <CardFooter>
                           <div className="card-stats">
                             <Icon
                               icon="lar la-comments"
                               fontSize="1.7rem"
-                              text={`${card.commentCount}`}
+                              text={card.commentCount || "0"}
                             />
                             <Icon
                               icon="lar la-heart"
                               fontSize="1.7rem"
-                              text={`${card.likeCount}`}
+                              text={card.likeCount || "0"}
                             />
                             <div style={{ textAlign: "right", width: "100%" }}>
                               <Link
                                 inlineLine
-                                onClick={() => this.props.history.push("/view")}
+                                onClick={() =>
+                                  this.props.history.push(
+                                    `/view${card.Post_ID}`
+                                  )
+                                }
                               >
-                                VIEW
+                                View
                               </Link>
                             </div>
                           </div>
-                        </CardContent>
+                        </CardFooter>
                       </Card>
                     ))}
                   </div>

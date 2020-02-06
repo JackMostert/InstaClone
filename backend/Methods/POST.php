@@ -68,20 +68,24 @@ class POST
 		$User = $validation->checkUserLogin($JWT, $conn, $Res);
 		$data->ID = $_ENV["UUID_Light"]();
 		$data->User_ID = $User['User_ID'];
+		$filePath = '';
 
-		if (isset($_FILES["PostImageURL"]["name"])) {
-			$filePath = "post_images/" . basename($_FILES["PostImageURL"]["name"]);
-			move_uploaded_file(
-				$_FILES["PostImageURL"]["tmp_name"],
-				$filePath
-			);
-		} else {
-			$filePath = '';
+		$check = getimagesize($_FILES["PostImageURL"]["tmp_name"]);
+		if ($check === false) {
+			$Res->sendJSON("", 401, "");
 		}
+
+		print_r($_ENV["UUID_Light"]);
+
+		$filePath = "post_images/" .  basename($_FILES["PostImageURL"]['name']);
+		move_uploaded_file(
+			$_FILES["PostImageURL"]["tmp_name"],
+			$filePath
+		);
 
 		$data->PostImageURL = $filePath;
 		call_user_func($_ENV["PerparedSQL"]["POST_Post"], $conn, $data);
 
-		$Res->sendDATA($_FILES);
+		$Res->sendJSON("", 200, "");
 	}
 }
