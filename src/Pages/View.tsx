@@ -36,7 +36,7 @@ export default class View extends React.Component<IViewProps, IViewState> {
     formData.append("table", "Posts");
     formData.append("schema", "RequestConditional");
     formData.append("returnType", "Data");
-    formData.append("route", "/Feed");
+    formData.append("route", "/View");
     formData.append(
       "data",
       JSON.stringify({
@@ -84,14 +84,30 @@ export default class View extends React.Component<IViewProps, IViewState> {
 
   private postComment = () => {
     const formData = new FormData();
-    formData.append("userID", this.props.cookie.get("token"));
-    formData.append("imageID", this.props.match.params.id);
-    formData.append("comment", this.state.comment);
+
+    formData.append("method", "POST");
+    formData.append("table", "Comments");
+    formData.append("schema", "Comments");
+    formData.append("returnType", "Data");
+    formData.append("route", "/newComment");
+    formData.append("Token", this.props.cookie.get("token"));
+
+    formData.append(
+      "data",
+      JSON.stringify({
+        ID: "",
+        User_ID: "",
+        Post_ID: this.props.match.params.id,
+        Comment: this.state.comment
+      })
+    );
 
     Axios.post(
-      "http://localhost/InstaClone/backend/" + "postComment.php",
+      "http://localhost/InstaClone/backend/Core/" + "Core.php",
       formData
-    ).then(res => window.location.reload());
+    ).then(res => {
+      window.location.reload();
+    });
   };
 
   public render() {
@@ -213,26 +229,27 @@ export default class View extends React.Component<IViewProps, IViewState> {
                   </CallToAction>
                 </div>
               </div>
-              {/* {this.state.data.comments.map((el: any) => (
-                <Card
-                  size="fill"
-                  shadowSpread={3}
-                  style={{
-                    borderRadius: "5px",
-                    width: "100%",
-                    marginTop: "20px"
-                  }}
-                >
-                  <CardTitle size={5}>
-                    <Persona
-                      size={45}
-                      src="https://randomuser.me/api/portraits/men/75.jpg"
-                      text={el.Username}
-                    />
-                  </CardTitle>
-                  <CardContent>{el.Comment}</CardContent>
-                </Card>
-              ))} */}
+              {this.state.data.Comments &&
+                this.state.data.Comments.map((el: any) => (
+                  <Card
+                    size="fill"
+                    shadowSpread={3}
+                    style={{
+                      borderRadius: "5px",
+                      width: "100%",
+                      marginTop: "20px"
+                    }}
+                  >
+                    <CardTitle size={5}>
+                      <Persona
+                        size={45}
+                        src={`https://avatars.dicebear.com/v2/identicon/${el.Username}.svg`}
+                        text={el.Username}
+                      />
+                    </CardTitle>
+                    <CardContent>{el.Content}</CardContent>
+                  </Card>
+                ))}
             </PageGroup>
           </div>
         </Page>

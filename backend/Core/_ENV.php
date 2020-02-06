@@ -19,7 +19,7 @@ $_ENV['passwd'] = '';
 $_ENV['dbname'] = 'imageping';
 
 // For checking the request
-$_ENV['routes'] = array('/newPost', '/Feed', '/Profile', '/Register', '/Login', '/View');
+$_ENV['routes'] = array('/newPost', '/Feed', '/Profile', '/Register', '/Login', '/View', "/newComment");
 $_ENV['methods'] = array('GET', 'POST', 'DELETE', 'UPDATE');
 $_ENV['tables'] = array('Users', 'Comments', 'Posts', 'Likes');
 $_ENV['returnTypes'] = array('Count', 'Data');
@@ -46,6 +46,11 @@ $_ENV["PerparedSQL"] = array(
 	'POST_Post' => function ($conn, $data) {
 		$prepareSQL = $conn->prepare("INSERT INTO Posts (Post_ID, Post_UserID, Post_Content, Post_Title, Post_ImageURL) VALUES (?, ?, ?, ?, ?)");
 		$prepareSQL->bind_param("sssss", $data->ID, $data->User_ID, $data->PostText, $data->PostTitle, $data->PostImageURL);
+		$prepareSQL->execute();
+	},
+	'POST_Comment' => function ($conn, $data) {
+		$prepareSQL = $conn->prepare("INSERT INTO Comments (Comment_ID, Comment_UserID, Comment_PostID, Comment_Content) VALUES (?, ?, ?, ?)");
+		$prepareSQL->bind_param("ssss", $data->ID, $data->User_ID, $data->Post_ID, $data->Comment);
 		$prepareSQL->execute();
 	},
 	'GET_Conditional' => function ($conn, $table, $field, $toSearch) {

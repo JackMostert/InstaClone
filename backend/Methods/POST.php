@@ -16,7 +16,7 @@ class POST
 				$this->newPost($data, $Res, $conn, $validation, $JWT, $file);
 				break;
 			case '/newComment':
-				# code...
+				$this->newComment($data, $Res, $conn, $validation, $JWT);
 				break;
 			case '/newLike':
 				# code...
@@ -25,6 +25,17 @@ class POST
 				$this->login($data, $Res, $conn);
 				break;
 		}
+	}
+
+	private function newComment($data, $Res, $conn, $validation, $JWT)
+	{
+		$User = $validation->checkUserLogin($JWT, $conn, $Res);
+		$data->ID = $_ENV["UUID_Light"]();
+		$data->User_ID = $User['User_ID'];
+
+		call_user_func($_ENV["PerparedSQL"]["POST_Comment"], $conn, $data);
+
+		$Res->sendJSON("", 200, "");
 	}
 
 	private function login($data, $Res, $conn)

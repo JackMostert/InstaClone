@@ -28,7 +28,7 @@ class GET extends Database
 		$payload = array();
 
 		switch ($route) {
-			case '/Feed':
+			case '/Feed' || '/View':
 				$data = $this->getData($table, $returnType, $schema, $data, $conn);
 				while ($rowData = $data->fetch_assoc()) {
 					$internalData = new stdClass();
@@ -40,6 +40,25 @@ class GET extends Database
 
 					$internalData->field = "Comment_PostID";
 					$commentCount = $this->getData('Comments', 'Count', 'RequestConditional', $internalData, $conn)->fetch_assoc()['total'];
+
+					if ($route === "/View") {
+						$rowData['Comments'] = [];
+
+						$commentsRaw = $this->getData('Comments', 'Data', 'RequestConditional', $internalData, $conn);
+						while ($comment = $commentsRaw->fetch_assoc()) {
+							$commentData = new stdClass();
+
+							$internalData->toSearch = $comment['Comment_UserID'];
+							$internalData->field = "User_ID";
+
+							$UserInfo 		= $this->getData('Users', 'Data', 'RequestConditional', $internalData, $conn)->fetch_assoc();
+
+							$commentData->Username = $UserInfo['User_Username'];
+							$commentData->Content = $comment['Comment_Content'];
+
+							array_push($rowData['Comments'], $commentData);
+						}
+					}
 
 					$internalData->toSearch = $rowData['Post_UserID'];
 					$internalData->field = "User_ID";
