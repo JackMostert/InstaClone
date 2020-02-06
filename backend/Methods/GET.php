@@ -28,7 +28,8 @@ class GET extends Database
 		$payload = array();
 
 		switch ($route) {
-			case '/Feed' || '/View':
+			case '/Feed':
+			case '/View':
 				$data = $this->getData($table, $returnType, $schema, $data, $conn);
 				while ($rowData = $data->fetch_assoc()) {
 					$internalData = new stdClass();
@@ -108,5 +109,9 @@ class GET extends Database
 		}
 
 		$Res->sendData($payload);
+	}
+
+	private function feedView()
+	{
 	}
 }

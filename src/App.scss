@@ -14,6 +14,19 @@
   font-weight: normal;
 }
 
+.custom-ui {
+  text-align: center;
+  .Header-root {
+    display: flex;
+    justify-content: center;
+  }
+  .btn {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 20px;
+  }
+}
+
 .model {
   position: fixed;
   top: 0;
@@ -25,6 +38,16 @@
   display: flex;
   justify-content: center;
   align-items: center;
+
+  .CardTitle-root {
+    display: flex;
+    justify-content: space-between;
+    .Link-root {
+      font-size: 1rem;
+      margin-right: 20px;
+      color: rgb(255, 0, 0);
+    }
+  }
 
   .CallToAction-root {
     width: auto;
@@ -76,7 +99,7 @@
 
 .feed-content {
   width: 90%;
-  max-width: 900px;
+  max-width: 700px;
   margin: 60px auto 20px auto;
 }
 

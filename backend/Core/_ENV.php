@@ -19,7 +19,7 @@ $_ENV['passwd'] = '';
 $_ENV['dbname'] = 'imageping';
 
 // For checking the request
-$_ENV['routes'] = array('/newPost', '/Feed', '/Profile', '/Register', '/Login', '/View', "/newComment");
+$_ENV['routes'] = array('/deletePost', '/updatePost', '/newPost', '/Feed', '/Profile', '/Register', '/Login', '/View', "/newComment", "/newLike");
 $_ENV['methods'] = array('GET', 'POST', 'DELETE', 'UPDATE');
 $_ENV['tables'] = array('Users', 'Comments', 'Posts', 'Likes');
 $_ENV['returnTypes'] = array('Count', 'Data');
@@ -36,6 +36,13 @@ $_ENV['Schema'] = array(
 	'RequestAll' => $RequestAllSchema,
 );
 
+$_ENV['ImageExtentions'] = array(
+	'tif',
+	'jpg',
+	'gif',
+	'png'
+);
+
 // PerparedSQL
 $_ENV["PerparedSQL"] = array(
 	'POST_Users' => function ($conn, $data) {
@@ -48,9 +55,32 @@ $_ENV["PerparedSQL"] = array(
 		$prepareSQL->bind_param("sssss", $data->ID, $data->User_ID, $data->PostText, $data->PostTitle, $data->PostImageURL);
 		$prepareSQL->execute();
 	},
+	'UPDATE_Post' => function ($conn, $data) {
+		$prepareSQL = $conn->prepare("UPDATE Posts SET Post_Content = '$data->PostText' WHERE Post_ID = '$data->ID' AND Post_UserID = '$data->Post_UserID'");
+		$prepareSQL->execute();
+	},
+	'UPDATE_Post_Image' => function ($conn, $data) {
+		$prepareSQL = $conn->prepare("UPDATE Posts SET Post_ImageURL = '$data->PostImageURL', Post_Content = '$data->PostText' WHERE Post_ID = '$data->ID' AND Post_UserID = '$data->Post_UserID'");
+		$prepareSQL->execute();
+	},
+	'DELETE_Post_Image' => function ($conn, $data) {
+		$prepareSQL = $conn->prepare("DELETE FROM Likes WHERE Like_PostID = '$data->ID'");
+		$prepareSQL->execute();
+
+		$prepareSQL = $conn->prepare("DELETE FROM Comments WHERE Comment_PostID = '$data->ID'");
+		$prepareSQL->execute();
+
+		$prepareSQL = $conn->prepare("DELETE FROM Posts WHERE Post_ID = '$data->ID' AND Post_UserID = '$data->Post_UserID'");
+		$prepareSQL->execute();
+	},
 	'POST_Comment' => function ($conn, $data) {
 		$prepareSQL = $conn->prepare("INSERT INTO Comments (Comment_ID, Comment_UserID, Comment_PostID, Comment_Content) VALUES (?, ?, ?, ?)");
 		$prepareSQL->bind_param("ssss", $data->ID, $data->User_ID, $data->Post_ID, $data->Comment);
+		$prepareSQL->execute();
+	},
+	'POST_Like' => function ($conn, $data) {
+		$prepareSQL = $conn->prepare("INSERT INTO Likes (Like_ID, Like_UserID, Like_PostID) VALUES (?, ?, ?)");
+		$prepareSQL->bind_param("sss", $data->ID, $data->User_ID, $data->Post_ID);
 		$prepareSQL->execute();
 	},
 	'GET_Conditional' => function ($conn, $table, $field, $toSearch) {
@@ -72,7 +102,16 @@ $_ENV["PerparedSQL"] = array(
 		$prepareSQL =  $conn->prepare("SELECT COUNT(*) as total FROM `$table`");
 		$prepareSQL->execute();
 		return $prepareSQL->get_result();
-	}
+	},
+	'GET_Conditional_Like' => function ($conn, $table, $field, $toSearch, $secondField, $secondSeaarch) {
+		$prepareSQL = $conn->prepare("SELECT * FROM `$table` WHERE $field = '$toSearch' AND $secondField = '$secondSeaarch'");
+		$prepareSQL->execute();
+		return $prepareSQL->get_result();
+	},
+	'REMOVE_Like' => function ($conn, $table, $field, $toSearch, $secondField, $secondSeaarch) {
+		$prepareSQL = $conn->prepare("DELETE FROM `$table` WHERE $field = '$toSearch' AND $secondField = '$secondSeaarch'");
+		$prepareSQL->execute();
+	},
 );
 
 $_ENV["UUID_Light"] = function ($length = 200) {

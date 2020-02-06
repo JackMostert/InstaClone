@@ -19,12 +19,31 @@ class POST
 				$this->newComment($data, $Res, $conn, $validation, $JWT);
 				break;
 			case '/newLike':
-				# code...
+				$this->newLike($data, $Res, $conn, $validation, $JWT);
 				break;
 			case '/Login':
 				$this->login($data, $Res, $conn);
 				break;
 		}
+	}
+
+	private function newLike($data, $Res, $conn, $validation, $JWT)
+	{
+		$User = $validation->checkUserLogin($JWT, $conn, $Res);
+		$data->ID = $_ENV["UUID_Light"]();
+		$data->User_ID = $User['User_ID'];
+
+		$FoundLike = call_user_func($_ENV["PerparedSQL"]["GET_Conditional_Like"], $conn, 'Likes', "Like_UserID", $User['User_ID'], 'Like_PostID', $data->Post_ID);
+
+		//Already Liked Photo
+		if ($FoundLike->fetch_assoc()) {
+			call_user_func($_ENV["PerparedSQL"]["REMOVE_Like"], $conn, 'Likes', "Like_UserID", $User['User_ID'], 'Like_PostID', $data->Post_ID);
+		} else {
+			// hasen't liked photo
+			call_user_func($_ENV["PerparedSQL"]["POST_Like"], $conn, $data);
+		}
+
+		$Res->sendJSON("", 200, "");
 	}
 
 	private function newComment($data, $Res, $conn, $validation, $JWT)
@@ -79,22 +98,34 @@ class POST
 		$User = $validation->checkUserLogin($JWT, $conn, $Res);
 		$data->ID = $_ENV["UUID_Light"]();
 		$data->User_ID = $User['User_ID'];
-		$filePath = '';
 
-		$check = getimagesize($_FILES["PostImageURL"]["tmp_name"]);
-		if ($check === false) {
-			$Res->sendJSON("", 401, "");
+		$extention = pathinfo($_FILES["PostImageURL"]["name"], PATHINFO_EXTENSION);
+		$hasValidExtnetion = false;
+
+		foreach ($_ENV['ImageExtentions'] as $Ext) {
+			if ($extention === $Ext) {
+				$hasValidExtnetion = true;
+			}
 		}
 
-		print_r($_ENV["UUID_Light"]());
+		if ($hasValidExtnetion === false) return $Res->sendJSON("Unsupported Media Type", 415, "Error");
 
-		$filePath = "post_images/" .  basename($_FILES["PostImageURL"]['name']);
+
+		$check = filesize($_FILES["PostImageURL"]["tmp_name"]);
+		//in bytes 
+		if ($check <= 100) {
+			$Res->sendJSON("Image Must have content", 415, "Error");
+		}
+
+		$fileName = $_ENV["UUID_Light"]() . "." . "$extention";
+		$filePath = __DIR__ . "/../post_images/" . "$fileName";
+
 		move_uploaded_file(
 			$_FILES["PostImageURL"]["tmp_name"],
 			$filePath
 		);
 
-		$data->PostImageURL = $filePath;
+		$data->PostImageURL = "post_images/" . $fileName;
 		call_user_func($_ENV["PerparedSQL"]["POST_Post"], $conn, $data);
 
 		$Res->sendJSON("", 200, "");

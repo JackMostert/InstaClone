@@ -80,7 +80,7 @@ class Validation
 	// Returns User Data or sends response
 	public function checkUserLogin($JWT, $conn, $Res)
 	{
-		if ($JWT === false) return $Res->sendJSON("You must be logged in", 401, "Error");;
+		if ($JWT === false || $JWT === 'undefined') return $Res->sendJSON("You must be logged in", 401, "Error");;
 
 		$JWTDecoded = JWT::decode($JWT, $_ENV['key'], array('HS384'));
 		if ($JWTDecoded === false) return $Res->sendJSON("You must be logged in", 401, "Error");;

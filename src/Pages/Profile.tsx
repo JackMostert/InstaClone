@@ -15,6 +15,8 @@ import CallToAction from "../Personal-Design-Language/CallToAction/Index";
 import { Grid } from "../Personal-Design-Language/Grid/Grid";
 import Axios from "axios";
 import CardFooter from "../Personal-Design-Language/CardFooter/Index";
+import { confirmAlert } from "react-confirm-alert";
+import "react-confirm-alert/src/react-confirm-alert.css";
 
 export interface IProfileProps {
   history: any;
@@ -36,7 +38,9 @@ export interface IProfileState {
     content?: string;
   };
   imageURL: any;
+  imageID: any;
   images: Array<Array<any>>;
+  editingImage: boolean;
 }
 
 export default class Profile extends React.Component<
@@ -46,6 +50,85 @@ export default class Profile extends React.Component<
   constructor(props: IProfileProps) {
     super(props);
 
+    this.getImages();
+
+    this.state = {
+      isEditing: false,
+      imageID: "",
+      usernameField: "",
+      emailField: "",
+      firstName: "",
+      lastName: "",
+      age: "",
+      joined: "",
+      newImage: {
+        isEditing: false,
+        image: undefined,
+        content: ""
+      },
+      imageURL: "https://via.placeholder.com/600x400",
+      images: [],
+      editingImage: false
+    };
+  }
+
+  private updateImage() {
+    const formData = new FormData();
+
+    formData.append("method", "UPDATE");
+    formData.append("table", "Posts");
+    formData.append("schema", "Posts");
+    formData.append("returnType", "Data");
+    formData.append("route", "/updatePost");
+
+    if (
+      this.state.newImage.image &&
+      this.state.newImage.image !== this.state.imageURL
+    ) {
+      formData.append(
+        "PostImageURL",
+        this.state.newImage.image,
+        this.state.newImage.image.name
+      );
+    }
+
+    formData.append("Token", this.props.cookie.get("token"));
+
+    formData.append(
+      "data",
+      JSON.stringify({
+        PostText: this.state.newImage.content || "",
+        User_ID: "",
+        PostTitle: "",
+        ID: this.state.imageID,
+        PostImageURL: ""
+      })
+    );
+
+    Axios.post(
+      "http://localhost/InstaClone/backend/Core/" + "Core.php",
+      formData,
+      {
+        headers: {
+          "Content-Type": `multipart/form-data;`
+        }
+      }
+    )
+      .then(re => {
+        if (re.data) {
+          this.setState({
+            imageURL: "https://via.placeholder.com/600x400",
+            newImage: { content: "", image: "", isEditing: false }
+          });
+          this.getImages();
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
+
+  private getImages() {
     const formData = new FormData();
     formData.append("Token", this.props.cookie.get("token"));
     formData.append("method", "GET");
@@ -83,30 +166,49 @@ export default class Profile extends React.Component<
           lastName: res.data.User_LastName || "",
           age: res.data.User_Age || "",
           joined: res.data.User_DateJoined || "",
-          images: img
+          images: img,
+          editingImage: false
         });
       }
     });
-
-    this.state = {
-      isEditing: false,
-      usernameField: "",
-      emailField: "",
-      firstName: "",
-      lastName: "",
-      age: "",
-      joined: "",
-      newImage: {
-        isEditing: false,
-        image: undefined,
-        content: ""
-      },
-      imageURL: "https://via.placeholder.com/600x400",
-      images: []
-    };
   }
 
   private imageRef = React.createRef<HTMLInputElement>();
+
+  private deleteImage() {
+    const formData = new FormData();
+
+    formData.append("method", "DELETE");
+    formData.append("table", "Posts");
+    formData.append("schema", "Posts");
+    formData.append("returnType", "Data");
+    formData.append("route", "/deletePost");
+
+    formData.append("Token", this.props.cookie.get("token"));
+
+    formData.append(
+      "data",
+      JSON.stringify({
+        PostText: "",
+        User_ID: "",
+        PostTitle: "",
+        ID: this.state.imageID,
+        PostImageURL: ""
+      })
+    );
+
+    Axios.post(
+      "http://localhost/InstaClone/backend/Core/" + "Core.php",
+      formData
+    ).then(re => {
+      this.setState({
+        imageURL: "https://via.placeholder.com/600x400",
+        newImage: { content: "", image: "", isEditing: false },
+        editingImage: false
+      });
+      this.getImages();
+    });
+  }
 
   private postImage = () => {
     const formData = new FormData();
@@ -134,7 +236,8 @@ export default class Profile extends React.Component<
         User_ID: "",
         PostTitle: "",
         ID: "",
-        PostImageURL: ""
+        PostImageURL: "",
+        editingImage: false
       })
     );
 
@@ -153,6 +256,7 @@ export default class Profile extends React.Component<
             imageURL: "https://via.placeholder.com/600x400",
             newImage: { content: "", image: "", isEditing: false }
           });
+          this.getImages();
         }
       })
       .catch(err => {
@@ -167,108 +271,11 @@ export default class Profile extends React.Component<
 
     return (
       <div className="Profile">
-        <div
-          className="model"
-          style={{ display: this.state.newImage.isEditing ? "flex" : "none" }}
-        >
-          <Card size="large" shadowSpread={5} style={{ borderRadius: "5px" }}>
-            <CardImage src={this.state.imageURL}>
-              <CallToAction
-                size={3}
-                onClick={() => {
-                  this.imageRef.current?.click();
-                }}
-              >
-                Add Image
-              </CallToAction>
-              <input
-                ref={this.imageRef}
-                style={{ display: "none" }}
-                type="file"
-                id="file"
-                onChange={event => {
-                  if (
-                    !!event.target.files &&
-                    event.target.files?.length !== 0
-                  ) {
-                    this.setState({
-                      newImage: {
-                        image: event.target.files[0],
-                        isEditing: true,
-                        content: this.state.newImage.content
-                      },
-                      imageURL:
-                        (URL.createObjectURL &&
-                          URL.createObjectURL(event.target.files[0])) ||
-                        this.state.imageURL
-                    });
-                  } else {
-                    this.setState({
-                      imageURL: "https://via.placeholder.com/600x400"
-                    });
-                  }
-                }}
-              ></input>
-            </CardImage>
-            <CardTitle size={5}>
-              <Persona
-                size={45}
-                src="https://randomuser.me/api/portraits/men/75.jpg"
-                text="cezer121"
-              />
-            </CardTitle>
-            <CardContent>
-              <textarea
-                placeholder="Type a message..."
-                className="content-text-editor"
-                value={this.state.newImage.content}
-                onChange={value => {
-                  this.setState({
-                    newImage: {
-                      content: value.currentTarget.value,
-                      isEditing: true,
-                      image: this.state.newImage.image
-                    }
-                  });
-                }}
-                style={{
-                  width: "100%",
-                  height: "200px",
-                  boxSizing: "border-box"
-                }}
-              ></textarea>
-              <br></br>
-              <div className="card-stats">
-                <Link
-                  inlineLine
-                  onClick={() => {
-                    this.postImage();
-                  }}
-                >
-                  POST
-                </Link>
-                <div style={{ textAlign: "right", width: "100%" }}>
-                  <Link
-                    onClick={() =>
-                      this.setState({
-                        newImage: {
-                          isEditing: false,
-                          image: undefined,
-                          content: ""
-                        }
-                      })
-                    }
-                  >
-                    Cancel
-                  </Link>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        {this.model()}
         <div
           style={{
-            filter: this.state.newImage.isEditing ? "blur(8px)" : "unset"
+            filter: this.state.newImage.isEditing ? "blur(8px)" : "unset",
+            zIndex: 1
           }}
         >
           <Page
@@ -471,9 +478,24 @@ export default class Profile extends React.Component<
                             text={this.state.usernameField}
                           />
                           <Link
-                            onClick={() =>
-                              this.props.history.push(`/view${card.Post_ID}`)
-                            }
+                            inlineLine
+                            onClick={() => {
+                              this.setState({
+                                imageID: card.Post_ID,
+                                newImage: {
+                                  isEditing: true,
+                                  image:
+                                    "http://localhost/InstaClone/backend/" +
+                                    card.Post_ImageURL,
+                                  content:
+                                    card.Post_Content && card.Post_Content
+                                },
+                                imageURL:
+                                  "http://localhost/InstaClone/backend/" +
+                                  card.Post_ImageURL,
+                                editingImage: true
+                              });
+                            }}
                           >
                             Edit
                           </Link>
@@ -495,7 +517,6 @@ export default class Profile extends React.Component<
                             />
                             <div style={{ textAlign: "right", width: "100%" }}>
                               <Link
-                                inlineLine
                                 onClick={() =>
                                   this.props.history.push(
                                     `/view${card.Post_ID}`
@@ -515,6 +536,148 @@ export default class Profile extends React.Component<
             </div>
           </Page>
         </div>
+      </div>
+    );
+  }
+
+  private model() {
+    return (
+      <div
+        className="model"
+        style={{ display: this.state.newImage.isEditing ? "flex" : "none" }}
+      >
+        <Card size="large" shadowSpread={5} style={{ borderRadius: "5px" }}>
+          <CardImage src={this.state.imageURL}>
+            <CallToAction
+              size={3}
+              onClick={() => {
+                this.imageRef.current?.click();
+              }}
+            >
+              Add Image
+            </CallToAction>
+            <input
+              ref={this.imageRef}
+              style={{ display: "none" }}
+              type="file"
+              id="file"
+              onChange={event => {
+                if (!!event.target.files && event.target.files?.length !== 0) {
+                  this.setState({
+                    newImage: {
+                      image: event.target.files[0],
+                      isEditing: true,
+                      content: this.state.newImage.content
+                    },
+                    imageURL:
+                      (URL.createObjectURL &&
+                        URL.createObjectURL(event.target.files[0])) ||
+                      this.state.imageURL
+                  });
+                } else {
+                  this.setState({
+                    imageURL: "https://via.placeholder.com/600x400"
+                  });
+                }
+              }}
+            ></input>
+          </CardImage>
+          <CardTitle size={5}>
+            <Persona
+              size={45}
+              src={`https://avatars.dicebear.com/v2/identicon/${this.state.usernameField}.svg`}
+              text={this.state.usernameField}
+            />
+            {this.state.editingImage && (
+              <Link
+                inlineLine
+                onClick={() => {
+                  confirmAlert({
+                    customUI: ({ onClose }) => {
+                      return (
+                        <div className="custom-ui">
+                          <Header hNumber={3}>Are you sure?</Header>
+                          <Text weight="regular">
+                            You want to delete this Post?
+                          </Text>
+                          <div className="btn">
+                            <CallToAction size={3} onClick={onClose}>
+                              No
+                            </CallToAction>
+                            <CallToAction
+                              size={3}
+                              onClick={() => {
+                                this.deleteImage();
+                                onClose();
+                              }}
+                            >
+                              Yes, Delete it!
+                            </CallToAction>
+                          </div>
+                        </div>
+                      );
+                    }
+                  });
+                }}
+              >
+                DELETE
+              </Link>
+            )}
+          </CardTitle>
+          <CardContent>
+            <textarea
+              placeholder="Type a message..."
+              className="content-text-editor"
+              value={this.state.newImage.content}
+              onChange={value => {
+                this.setState({
+                  newImage: {
+                    content: value.currentTarget.value,
+                    isEditing: true,
+                    image: this.state.newImage.image
+                  }
+                });
+              }}
+              style={{
+                width: "100%",
+                height: "200px",
+                boxSizing: "border-box"
+              }}
+            ></textarea>
+            <br></br>
+            <div className="card-stats">
+              <Link
+                inlineLine
+                onClick={() => {
+                  if (this.state.editingImage) {
+                    this.updateImage();
+                  } else {
+                    this.postImage();
+                  }
+                }}
+              >
+                {this.state.editingImage ? "Edit" : "Post"}
+              </Link>
+              <div style={{ textAlign: "right", width: "100%" }}>
+                <Link
+                  onClick={() =>
+                    this.setState({
+                      imageID: "",
+                      editingImage: false,
+                      newImage: {
+                        isEditing: false,
+                        image: undefined,
+                        content: ""
+                      }
+                    })
+                  }
+                >
+                  Cancel
+                </Link>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }

@@ -30,32 +30,7 @@ export default class View extends React.Component<IViewProps, IViewState> {
   constructor(props: IViewProps) {
     super(props);
 
-    const formData = new FormData();
-
-    formData.append("method", "GET");
-    formData.append("table", "Posts");
-    formData.append("schema", "RequestConditional");
-    formData.append("returnType", "Data");
-    formData.append("route", "/View");
-    formData.append(
-      "data",
-      JSON.stringify({
-        field: "Post_ID",
-        toSearch: this.props.match.params.id
-      })
-    );
-
-    Axios.post(
-      "http://localhost/InstaClone/backend/Core/" + "Core.php",
-      formData
-    ).then(res => {
-      if (res.data[0]) {
-        this.setState({
-          data: res.data[0]
-        });
-        console.log(this.state.data);
-      }
-    });
+    this.GetPostData();
 
     this.state = {
       hasLikedImage: false,
@@ -73,13 +48,29 @@ export default class View extends React.Component<IViewProps, IViewState> {
 
   private postLike = () => {
     const formData = new FormData();
-    formData.append("userID", this.props.cookie.get("token"));
-    formData.append("imageID", this.props.match.params.id);
+
+    formData.append("method", "POST");
+    formData.append("table", "Likes");
+    formData.append("schema", "Likes");
+    formData.append("returnType", "Data");
+    formData.append("route", "/newLike");
+    formData.append("Token", this.props.cookie.get("token"));
+
+    formData.append(
+      "data",
+      JSON.stringify({
+        ID: "",
+        User_ID: "",
+        Post_ID: this.props.match.params.id
+      })
+    );
 
     Axios.post(
-      "http://localhost/InstaClone/backend/" + "postLike.php",
+      "http://localhost/InstaClone/backend/Core/" + "Core.php",
       formData
-    ).then(res => window.location.reload());
+    ).then(res => {
+      this.GetPostData();
+    });
   };
 
   private postComment = () => {
@@ -91,6 +82,8 @@ export default class View extends React.Component<IViewProps, IViewState> {
     formData.append("returnType", "Data");
     formData.append("route", "/newComment");
     formData.append("Token", this.props.cookie.get("token"));
+
+    if (this.state.comment.length <= 0) return;
 
     formData.append(
       "data",
@@ -106,9 +99,36 @@ export default class View extends React.Component<IViewProps, IViewState> {
       "http://localhost/InstaClone/backend/Core/" + "Core.php",
       formData
     ).then(res => {
-      window.location.reload();
+      this.setState({ comment: "" });
+      this.GetPostData();
     });
   };
+
+  private GetPostData() {
+    const formData = new FormData();
+    formData.append("method", "GET");
+    formData.append("table", "Posts");
+    formData.append("schema", "RequestConditional");
+    formData.append("returnType", "Data");
+    formData.append("route", "/View");
+    formData.append(
+      "data",
+      JSON.stringify({
+        field: "Post_ID",
+        toSearch: this.props.match.params.id
+      })
+    );
+    Axios.post(
+      "http://localhost/InstaClone/backend/Core/" + "Core.php",
+      formData
+    ).then(res => {
+      if (res.data[0]) {
+        this.setState({
+          data: res.data[0]
+        });
+      }
+    });
+  }
 
   public render() {
     return (
@@ -188,15 +208,15 @@ export default class View extends React.Component<IViewProps, IViewState> {
                     />
                     <div style={{ textAlign: "right", width: "100%" }}>
                       <Link
-                        inlineLine
-                        onClick={() =>
-                          this.props.history.push(
-                            `/view${this.state.data.Post_ID}`
-                          )
-                        }
-                      >
-                        VIEW
-                      </Link>
+                        inlineLine={this.state.hasLikedImage}
+                        onClick={() => {
+                          this.setState({
+                            hasLikedImage: !this.state.hasLikedImage
+                          });
+                          this.postLike();
+                        }}
+                        iconProps={{ icon: "la la-heart", fontSize: "2rem" }}
+                      ></Link>
                     </div>
                   </div>
                 </CardFooter>
@@ -204,15 +224,20 @@ export default class View extends React.Component<IViewProps, IViewState> {
             </PageGroup>
             <PageGroup>
               <Header hNumber={5}>Comments</Header>
-              <div
+              <form
                 style={{
                   display: "grid",
                   gridTemplateColumns: "4fr 1fr",
                   alignItems: "center",
                   gridColumnGap: "10px"
                 }}
+                onSubmit={ev => {
+                  ev.preventDefault();
+                  this.postComment();
+                }}
               >
                 <TextInput
+                  value={this.state.comment}
                   size={5}
                   type="text"
                   borderRadius={5}
@@ -228,7 +253,7 @@ export default class View extends React.Component<IViewProps, IViewState> {
                     Comment
                   </CallToAction>
                 </div>
-              </div>
+              </form>
               {this.state.data.Comments &&
                 this.state.data.Comments.map((el: any) => (
                   <Card

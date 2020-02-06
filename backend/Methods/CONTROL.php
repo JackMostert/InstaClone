@@ -49,10 +49,10 @@ class CONTROL extends Database
 				$this->POST->start($data, $route, $this->Res, $this->conn, $JWT, $this->Validation, $file);
 				break;
 			case 'UPDATE':
-				$this->UPDATE->start($data, $route, $this->Res, $this->conn, $JWT, $this->Validation);
+				$this->UPDATE->start($table, $returnType, $schema, $data, $route, $this->Res, $this->conn, $JWT, $this->Validation);
 				break;
 			case 'DELETE':
-				$this->DELETE->start($data, $route, $this->Res, $this->conn, $JWT, $this->Validation);
+				$this->DELETE->start($table, $returnType, $schema, $data, $route, $this->Res, $this->conn, $JWT, $this->Validation);
 				break;
 		}
 
