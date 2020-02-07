@@ -13,6 +13,7 @@ import TextInput from "../Personal-Design-Language/TextInput/Index";
 import Axios from "axios";
 import CallToAction from "../Personal-Design-Language/CallToAction/Index";
 import CardFooter from "../Personal-Design-Language/CardFooter/Index";
+import _ from "lodash";
 
 export interface IViewProps {
   history: any;
@@ -126,6 +127,15 @@ export default class View extends React.Component<IViewProps, IViewState> {
         this.setState({
           data: res.data[0]
         });
+        this.setState({
+          data: {
+            ...this.state.data,
+            Comments: _.orderBy(
+              this.state.data.Comments,
+              (o: any) => o.Comment_DatePosted
+            ).reverse()
+          }
+        });
       }
     });
   }
@@ -224,16 +234,12 @@ export default class View extends React.Component<IViewProps, IViewState> {
             </PageGroup>
             <PageGroup>
               <Header hNumber={5}>Comments</Header>
-              <form
+              <div
                 style={{
                   display: "grid",
                   gridTemplateColumns: "4fr 1fr",
                   alignItems: "center",
                   gridColumnGap: "10px"
-                }}
-                onSubmit={ev => {
-                  ev.preventDefault();
-                  this.postComment();
                 }}
               >
                 <TextInput
@@ -253,7 +259,7 @@ export default class View extends React.Component<IViewProps, IViewState> {
                     Comment
                   </CallToAction>
                 </div>
-              </form>
+              </div>
               {this.state.data.Comments &&
                 this.state.data.Comments.map((el: any) => (
                   <Card

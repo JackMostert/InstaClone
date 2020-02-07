@@ -3,7 +3,6 @@ import { Page } from "../Personal-Design-Language/Page/Page";
 import { Card } from "../Personal-Design-Language/Card/Card";
 import Header from "../Personal-Design-Language/Header/Index";
 import image from "../Personal-Design-Language/styles/coming-soon.svg";
-import CardTitle from "../Personal-Design-Language/CardTitle/Index";
 
 export interface IHomeProps {
   history: any;

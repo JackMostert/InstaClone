@@ -447,7 +447,7 @@ export default class Profile extends React.Component<
                   <CallToAction
                     size={3}
                     onClick={() => {
-                      this.setState({ newImage: { isEditing: true } });
+                      this.setState({ newImage: { isEditing: true }, editingImage: false});
                     }}
                   >
                     New Post

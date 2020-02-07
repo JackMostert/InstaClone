@@ -98,34 +98,35 @@ class POST
 		$User = $validation->checkUserLogin($JWT, $conn, $Res);
 		$data->ID = $_ENV["UUID_Light"]();
 		$data->User_ID = $User['User_ID'];
+		if (isset($_FILES["PostImageURL"])) {
+			$extention = pathinfo($_FILES["PostImageURL"]["name"], PATHINFO_EXTENSION);
+			$hasValidExtnetion = false;
 
-		$extention = pathinfo($_FILES["PostImageURL"]["name"], PATHINFO_EXTENSION);
-		$hasValidExtnetion = false;
-
-		foreach ($_ENV['ImageExtentions'] as $Ext) {
-			if ($extention === $Ext) {
-				$hasValidExtnetion = true;
+			foreach ($_ENV['ImageExtentions'] as $Ext) {
+				if ($extention === $Ext) {
+					$hasValidExtnetion = true;
+				}
 			}
+
+			if ($hasValidExtnetion === false) return $Res->sendJSON("Unsupported Media Type", 415, "Error");
+
+
+			$check = filesize($_FILES["PostImageURL"]["tmp_name"]);
+			//in bytes 
+			if ($check <= 100) {
+				$Res->sendJSON("Image Must have content", 415, "Error");
+			}
+
+			$fileName = $_ENV["UUID_Light"]() . "." . "$extention";
+			$filePath = __DIR__ . "/../post_images/" . "$fileName";
+
+			move_uploaded_file(
+				$_FILES["PostImageURL"]["tmp_name"],
+				$filePath
+			);
+
+			$data->PostImageURL = "post_images/" . $fileName;
 		}
-
-		if ($hasValidExtnetion === false) return $Res->sendJSON("Unsupported Media Type", 415, "Error");
-
-
-		$check = filesize($_FILES["PostImageURL"]["tmp_name"]);
-		//in bytes 
-		if ($check <= 100) {
-			$Res->sendJSON("Image Must have content", 415, "Error");
-		}
-
-		$fileName = $_ENV["UUID_Light"]() . "." . "$extention";
-		$filePath = __DIR__ . "/../post_images/" . "$fileName";
-
-		move_uploaded_file(
-			$_FILES["PostImageURL"]["tmp_name"],
-			$filePath
-		);
-
-		$data->PostImageURL = "post_images/" . $fileName;
 		call_user_func($_ENV["PerparedSQL"]["POST_Post"], $conn, $data);
 
 		$Res->sendJSON("", 200, "");

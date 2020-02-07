@@ -56,6 +56,7 @@ class GET extends Database
 
 							$commentData->Username = $UserInfo['User_Username'];
 							$commentData->Content = $comment['Comment_Content'];
+							$commentData->Comment_DatePosted = $comment['Comment_DateAdded'];
 
 							array_push($rowData['Comments'], $commentData);
 						}

@@ -4,12 +4,10 @@ import { Card } from "../Personal-Design-Language/Card/Card";
 import Header from "../Personal-Design-Language/Header/Index";
 import { Grid } from "../Personal-Design-Language/Grid/Grid";
 import TextInput from "../Personal-Design-Language/TextInput/Index";
-import PageGroup from "../Personal-Design-Language/PageGroup/Index";
 import CallToAction from "../Personal-Design-Language/CallToAction/Index";
 import Axios from "axios";
 import Cookies from "universal-cookie";
 import { isString } from "util";
-const cookies: any = new Cookies();
 
 export interface IRegisterProps {
   history: any;

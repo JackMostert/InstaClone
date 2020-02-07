@@ -1,7 +1,6 @@
 import * as React from "react";
 import { Page } from "../Personal-Design-Language/Page/Page";
 import { Card } from "../Personal-Design-Language/Card/Card";
-import Header from "../Personal-Design-Language/Header/Index";
 import { Text } from "../Personal-Design-Language/Text/Text";
 import Link from "../Personal-Design-Language/Link/Index";
 
