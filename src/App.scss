@@ -14,6 +14,20 @@
   font-weight: normal;
 }
 
+.forgotPassword,
+.NewPassword {
+  .Header-root {
+    margin-top: 5%;
+    justify-content: center;
+    font-weight: normal;
+  }
+
+  .CallToAction-root {
+    width: 250px;
+    margin-top: 10px;
+  }
+}
+
 .custom-ui {
   text-align: center;
   .Header-root {

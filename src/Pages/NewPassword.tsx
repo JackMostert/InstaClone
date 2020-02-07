@@ -1,58 +1,56 @@
 import * as React from "react";
 import { Page } from "../Personal-Design-Language/Page/Page";
 import { Card } from "../Personal-Design-Language/Card/Card";
-import { Text } from "../Personal-Design-Language/Text/Text";
-import Link from "../Personal-Design-Language/Link/Index";
 import Header from "../Personal-Design-Language/Header/Index";
 import TextInput from "../Personal-Design-Language/TextInput/Index";
 import CallToAction from "../Personal-Design-Language/CallToAction/Index";
 import Axios from "axios";
 
-export interface IForgotPasswordProps {
+export interface INewPasswordProps {
   history: any;
   cookie: any;
 }
-export interface IForgotPasswordState {
+
+export interface INewPasswordState {
   email: string;
 }
 
-export default class ForgotPassword extends React.Component<
-  IForgotPasswordProps,
-  IForgotPasswordState
+export default class NewPassword extends React.Component<
+  INewPasswordProps,
+  INewPasswordState
 > {
-  constructor(props: IForgotPasswordProps) {
+  constructor(props: INewPasswordProps) {
     super(props);
     this.state = {
       email: ""
     };
   }
 
-  private sendEmail = () => {
+  private newPassword = () => {
     const formData = new FormData();
-    formData.append("email", this.state.email);
-    formData.append("method", "First");
+    let info = this.props.cookie.get("token");
+
+    formData.append("token", info.token);
+    formData.append("selector", info.selector);
+    formData.append("pwd", this.state.email);
+    formData.append("method", "Second");
 
     Axios.post(
       "http://localhost/InstaClone/backend/ResetPassword.php",
       formData
     ).then(res => {
-      if (res.data) {
-        let d = new Date();
-        d.setTime(d.getTime() + 1 * 60 * 1000);
-        this.props.cookie.set("token", res.data, { path: "/" });
-        this.props.history.push("/NewPassword");
-      }
+      this.props.history.push("/login");
     });
   };
 
   public render() {
     return (
-      <div className="forgotPassword">
+      <div className="NewPassword">
         <Page
           width="100%"
           isRoot
           pageAlignment="center"
-          navLinksNear={[{ displayName: "ForgotPassword", isHeader: true }]}
+          navLinksNear={[{ displayName: "New Password", isHeader: true }]}
           navLinksFar={[
             { displayName: "Home", url: "/", iconName: "la la-home" },
             { displayName: "Feed", url: "/feed", iconName: "la la-rss" },
@@ -94,20 +92,15 @@ export default class ForgotPassword extends React.Component<
                 flexFlow: "column"
               }}
             >
-              <Link inlineLine onClick={() => this.props.history.push("login")}>
-                Click to return
-              </Link>
-              <Header hNumber={4}>Forgot your password?</Header>
-              <Text weight="regular" fontSize="1.3rem">
-                Enter your Email address and check your inbox
-              </Text>
+              <Header hNumber={4}>New Password</Header>
               <TextInput
-                type="email"
+                type="password"
                 size={3}
+                labelValue="Enter new password"
                 value={this.state.email}
                 onChange={value => this.setState({ email: value })}
               ></TextInput>
-              <CallToAction size={3} onClick={this.sendEmail}>
+              <CallToAction size={3} onClick={this.newPassword}>
                 Recover my email
               </CallToAction>
             </Card>

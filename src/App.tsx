@@ -11,6 +11,7 @@ import Profile from "./Pages/Profile";
 import { withCookies } from "react-cookie";
 import Cookies from "universal-cookie";
 import Unauth from "./Pages/Unauth";
+import NewPassword from "./Pages/NewPassword";
 const cookies: any = new Cookies();
 
 const App: React.FC = () => {
@@ -56,6 +57,11 @@ const App: React.FC = () => {
           exact
           path="/forgotpassword"
           render={props => <ForgotPassword {...props} cookie={cookies} />}
+        />
+        <Route
+          exact
+          path="/NewPassword"
+          render={props => <NewPassword {...props} cookie={cookies} />}
         />
       </Router>
     </div>
